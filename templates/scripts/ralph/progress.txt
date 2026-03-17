@@ -1,0 +1,7 @@
+# Ralph Progress Log
+Started: [date]
+
+## Codebase Patterns
+(Discovered patterns are consolidated here — always read this section first)
+
+---

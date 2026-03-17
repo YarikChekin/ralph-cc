@@ -295,7 +295,7 @@ Offer options:
 1. Write to `scripts/ralph/prd.json`
 2. Reset `scripts/ralph/progress.txt` — keep the Codebase Patterns section at the top if it exists, clear all previous sprint entries below it. If no Codebase Patterns section exists, create a minimal header:
    ```
-   # Progress Log
+   # Ralph Progress Log
 
    ## Codebase Patterns
    [Will be populated as stories are completed]

@@ -258,7 +258,7 @@ Copy the example sprint format so users have a reference. Write the following co
 {
   "project": "MyApp",
   "source": "prd",
-  "sourceItem": "4.1",
+  "sourceItem": "3.1",
   "branchName": "ralph/user-auth",
   "description": "User Authentication — signup, login, session management",
   "userStories": [

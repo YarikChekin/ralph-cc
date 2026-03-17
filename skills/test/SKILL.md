@@ -163,7 +163,7 @@ Ask: "Want to review open issues, or archive this test round?"
       "id": "TC-01",
       "title": "Fresh Signup",
       "feature": "Auth",
-      "prdSection": "4.1",
+      "prdSection": "3.1",
       "precondition": "No existing account",
       "steps": [
         "Open the app — should see login screen",

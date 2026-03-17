@@ -5,7 +5,7 @@ description: Use when the user has a product idea to brainstorm, research, and d
 
 # /new-idea — Brainstorm, Research & Document Product Ideas
 
-Captures product ideas through structured brainstorming, market research, and codebase analysis. Produces a living document in the ideas directory that can be directly ported into a Ralph sprint via `/new-prd`.
+Captures product ideas through structured brainstorming, market research, and codebase analysis. Produces a living document in the ideas directory that can be directly ported into a Ralph sprint via `/new-sprint`.
 
 ## Before Starting
 
@@ -116,7 +116,7 @@ Discuss the assessment with the user. They may want to adjust scope to reduce ef
 
 ## Step 5: Document the Idea
 
-Derive the ideas directory from the `Documents.ideas` path in RALPH.md (e.g., if ideas is `docs/ideas/_index.md`, the directory is `docs/ideas/`). Write the idea file to `[ideas directory]/[idea-name].md` using the template below. The format is designed to port directly into `/new-prd` when the time comes.
+Derive the ideas directory from the `Documents.ideas` path in RALPH.md (e.g., if ideas is `docs/ideas/_index.md`, the directory is `docs/ideas/`). Write the idea file to `[ideas directory]/[idea-name].md` using the template below. The format is designed to port directly into `/new-sprint` when the time comes.
 
 ### File Naming
 - Use kebab-case: `smart-search.md`, `bulk-import.md`
@@ -171,13 +171,13 @@ Derive the ideas directory from the `Documents.ideas` path in RALPH.md (e.g., if
 
 ## PRD Mapping
 
-[Which PRD section would this fall under? Is it an extension of an existing feature or entirely new? This helps `/new-prd` know where to slot it.]
+[Which PRD section would this fall under? Is it an extension of an existing feature or entirely new? This helps `/new-sprint` know where to slot it.]
 ```
 
 ### Status Values
 - `idea` — just captured, not yet committed to
 - `researched` — has market research and technical audit
-- `planned` — committed to building, ready for `/new-prd`
+- `planned` — committed to building, ready for `/new-sprint`
 - `in-progress` — currently in a sprint
 - `shipped` — built and merged to main
 - `parked` — intentionally deferred (add reason)
