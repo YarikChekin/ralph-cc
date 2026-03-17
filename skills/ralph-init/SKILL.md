@@ -369,63 +369,64 @@ Living index of product ideas. Use `/new-idea` to add new entries.
 
 ---
 
-## Step 3: Ask Setup Questions
+## Step 3: Auto-Detect Project Configuration
 
-Before asking, scan the project for hints. Check these files if they exist:
-- `package.json` — look for scripts (typecheck, lint, test, e2e)
-- `Makefile` — look for targets (typecheck, lint, test)
-- `pyproject.toml` — look for tool configurations (ruff, mypy, pytest)
-- `Cargo.toml` — look for Rust project info
-- `go.mod` — look for Go module info
-- `composer.json` — look for PHP project info
-- `.github/workflows/*.yml` — look for CI commands
+Silently scan the project to detect as much as possible. Do NOT ask the user anything yet — just gather data.
 
-Use detected hints as smart defaults. Ask questions one at a time. Wait for the user's answer before asking the next question.
+### What to scan
 
-### Question 1
-"What's your project name?"
+**Project identity:**
+- Directory name → project name
+- `package.json` → `name` and `description` fields
+- `README.md` → first heading or description line
+- `pyproject.toml` → `[project]` name and description
+- `Cargo.toml` → `[package]` name and description
+- `go.mod` → module name
 
-Use the current directory name as the default suggestion. For example: "What's your project name? (default: **my-app**)"
+**Project type (product vs feature):**
+- Is the codebase empty or near-empty (just a README, no src/)? → likely `product` (new from scratch)
+- Does substantial code already exist? → likely `feature`
 
-### Question 2
-"One-line description of what you're building?"
+**Quality commands:**
+- `package.json` scripts → look for keys containing: `typecheck`, `tsc`, `type-check`, `lint`, `eslint`, `test`, `jest`, `vitest`, `e2e`, `playwright`, `cypress`, `maestro`
+- `Makefile` → look for targets: `typecheck`, `lint`, `test`, `e2e`
+- `pyproject.toml` → detect tools: `mypy` → `mypy .`, `ruff` → `ruff check .`, `pytest` → `pytest`, `playwright` → `playwright test`
+- `Cargo.toml` → `cargo check`, `cargo clippy`, `cargo test`
+- `go.mod` → `go vet ./...`, `golangci-lint run`, `go test ./...`
+- `.github/workflows/*.yml` or `.gitlab-ci.yml` → grep for test/lint/typecheck commands
 
-### Question 3
-"Is this a new product or a feature for an existing project?" (product | feature)
+**E2E detection:**
+- Look for `playwright`, `cypress`, `maestro`, `detox` in dependencies or config files
+- If found, infer both the `e2e` command (run all) and `e2e_single` command (run one with `{flow}` placeholder)
 
-### Question 4
-"What's your typecheck command?"
+### Present summary for confirmation
 
-If you detected a hint, show it. For example:
-- "Detected `tsc` in package.json scripts — use `npm run typecheck`?"
-- "Detected `mypy` in pyproject.toml — use `mypy .`?"
-- If no hint found: "What's your typecheck command? (e.g., `npm run typecheck`, `mypy .`, leave blank if none)"
+After scanning, show a single summary with everything you detected:
 
-### Question 5
-"What's your lint command?"
+```
+## Detected Project Configuration
 
-Show detected hint if found. For example:
-- "Detected `eslint` in package.json scripts — use `npm run lint`?"
-- "Detected `ruff` in pyproject.toml — use `ruff check .`?"
+| Setting | Value |
+|---------|-------|
+| **Name** | my-app |
+| **Description** | A task management API |
+| **Type** | feature (existing codebase detected) |
+| **Typecheck** | `npm run typecheck` |
+| **Lint** | `npm run lint` |
+| **Test** | `npm test` |
+| **E2E** | (none detected) |
 
-### Question 6
-"What's your test command?"
+Does this look right? Let me know what to change, or say **"looks good"** to continue.
+```
 
-Show detected hint if found. For example:
-- "Detected `jest` in package.json scripts — use `npm test`?"
-- "Detected `pytest` in pyproject.toml — use `pytest`?"
+**For any field that couldn't be detected**, show it as `(not detected — please provide)` and the user can fill it in.
 
-### Question 7
-"Do you have an E2E test setup? If so, what's the command to run all E2E tests?"
+**The user responds in one of three ways:**
+1. **"looks good"** / **"yes"** / confirms → proceed to Step 4 with detected values
+2. **Provides corrections** (e.g., "description should be X, and lint is `npm run lint:fix`") → update the values and proceed
+3. **Asks to change specific fields** → update and show the summary again for confirmation
 
-This is optional. If the user says no or skips, leave the e2e fields blank in RALPH.md.
-
-Show detected hint if found (e.g., "Detected `playwright` in devDependencies — use `npx playwright test`?")
-
-### Question 8 (only if E2E was provided)
-"What's the command to run a single E2E test file? Use `{flow}` as placeholder for the test path."
-
-For example: `npx playwright test {flow}`, `bash scripts/test-e2e.sh {flow}`
+This should be **one interaction** for most projects. Only ask follow-up questions if critical fields couldn't be detected (name and description are the most likely to need user input for new/empty projects).
 
 ---
 
