@@ -1,0 +1,38 @@
+{
+  "project": "MyApp",
+  "source": "prd",
+  "sourceItem": "4.1",
+  "branchName": "ralph/user-auth",
+  "description": "User Authentication — signup, login, session management",
+  "userStories": [
+    {
+      "id": "AUTH-001",
+      "title": "Add users table and auth schema",
+      "description": "Set up the database schema for user authentication.",
+      "acceptanceCriteria": [
+        "Create users table with email, password_hash, created_at columns",
+        "Add migration file",
+        "Typecheck passes"
+      ],
+      "priority": 1,
+      "passes": false,
+      "testFlow": null,
+      "notes": "Follow existing migration patterns in the project."
+    },
+    {
+      "id": "AUTH-002",
+      "title": "Create login screen with form validation",
+      "description": "Build the login UI with email/password fields and client-side validation.",
+      "acceptanceCriteria": [
+        "Login form with email and password fields",
+        "Client-side validation (email format, password length)",
+        "Error messages for invalid input",
+        "Typecheck passes"
+      ],
+      "priority": 2,
+      "passes": false,
+      "testFlow": null,
+      "notes": "Follow existing form patterns in the codebase."
+    }
+  ]
+}

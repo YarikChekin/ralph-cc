@@ -1,0 +1,12 @@
+{
+  "name": "ralph-cc",
+  "owner": { "name": "YarikChekin" },
+  "plugins": [
+    {
+      "name": "ralph-cc",
+      "source": ".",
+      "description": "Spec-driven development workflow for Claude Code",
+      "version": "1.0.0"
+    }
+  ]
+}

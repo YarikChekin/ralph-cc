@@ -1,0 +1,19 @@
+{
+  "name": "ralph-cc",
+  "version": "1.0.0",
+  "description": "Spec-driven development workflow for Claude Code — sprint planning, session management, and idea pipeline",
+  "keywords": [
+    "claude-code",
+    "ralph",
+    "workflow",
+    "sprint",
+    "agent",
+    "ai",
+    "development"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YarikChekin/ralph-cc"
+  }
+}
