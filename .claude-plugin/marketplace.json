@@ -4,7 +4,7 @@
   "plugins": [
     {
       "name": "ralph-cc",
-      "source": ".",
+      "source": "./",
       "description": "Spec-driven development workflow for Claude Code",
       "version": "1.0.0"
     }
