@@ -12,7 +12,7 @@ Creates a new `scripts/ralph/prd.json` by reading the PRD, backlog, and tech deb
 Before anything else, check that `RALPH.md` exists in the project root and has `Documents.prd` defined with a non-empty path.
 
 - **If RALPH.md is missing:** Stop immediately. Tell the user:
-  > "No RALPH.md found. Run `/init` to set up ralph in this project."
+  > "No RALPH.md found. Run `/ralph-init` to set up ralph in this project."
 - **If Documents.prd is missing or empty:** Stop immediately. Tell the user:
   > "No PRD found. Run `/prd-plan` to create one."
 - **If the PRD file itself doesn't exist at the configured path:** Stop immediately. Tell the user:

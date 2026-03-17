@@ -23,7 +23,7 @@ If `RALPH.md` is missing entirely, show:
 
 No RALPH.md found in this project.
 ```
-And offer: "Run `/init` to set up ralph, or create RALPH.md manually."
+And offer: "Run `/ralph-init` to set up ralph, or create RALPH.md manually."
 Stop here — do not proceed to state gathering.
 
 If `RALPH.md` exists but is missing required fields, show:
@@ -33,7 +33,7 @@ If `RALPH.md` exists but is missing required fields, show:
 Missing fields:
 - [list each missing/empty required field]
 ```
-And offer: "Run `/init` to reconfigure, or fill in the missing fields manually."
+And offer: "Run `/ralph-init` to reconfigure, or fill in the missing fields manually."
 Stop here — do not proceed to state gathering.
 
 **Once RALPH.md is validated**, read all paths from it and gather state:

@@ -14,7 +14,7 @@ Read `RALPH.md` to find:
 - `Testing.test_progress` — path to the test progress file
 - `Documents.issues` — path to the issues file
 
-If `RALPH.md` doesn't exist or is missing the Testing paths, tell the user: "RALPH.md is missing Testing configuration. Run `/init` to set up your project, or add the Testing section to RALPH.md manually."
+If `RALPH.md` doesn't exist or is missing the Testing paths, tell the user: "RALPH.md is missing Testing configuration. Run `/ralph-init` to set up your project, or add the Testing section to RALPH.md manually."
 
 ## Step 1: Load State
 

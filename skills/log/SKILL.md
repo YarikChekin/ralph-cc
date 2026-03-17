@@ -21,7 +21,7 @@ Read `RALPH.md` to find:
 - `Documents.issues` — file path for bug entries
 - `Documents.backlog` — file path for improvement entries
 
-If `RALPH.md` doesn't exist or is missing these paths, tell the user: "RALPH.md is missing or incomplete. Run `/init` to set up your project."
+If `RALPH.md` doesn't exist or is missing these paths, tell the user: "RALPH.md is missing or incomplete. Run `/ralph-init` to set up your project."
 
 ## Step 2: Parse Input
 

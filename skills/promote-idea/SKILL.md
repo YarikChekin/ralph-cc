@@ -13,7 +13,7 @@ Read `RALPH.md` to find:
 - `Documents.ideas` — path to the ideas index file (derive the ideas directory from this path)
 - `Documents.backlog` — path to the backlog file
 
-If `RALPH.md` doesn't exist or is missing these paths, tell the user: "RALPH.md is missing or incomplete. Run `/init` to set up your project."
+If `RALPH.md` doesn't exist or is missing these paths, tell the user: "RALPH.md is missing or incomplete. Run `/ralph-init` to set up your project."
 
 ## Step 1: Show All Ideas
 

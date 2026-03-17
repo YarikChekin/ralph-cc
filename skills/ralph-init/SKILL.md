@@ -1,5 +1,5 @@
 ---
-name: init
+name: ralph-init
 description: Scaffold ralph-cc into a project — creates RALPH.md config, scripts/ralph/ directory, and doc templates. Run this once to set up ralph in any project.
 ---
 
@@ -522,5 +522,5 @@ Adjust the "Created" list to reflect what was actually created vs skipped. If a 
 
 - **E2E testing is always optional.** It only applies if configured in RALPH.md (the `e2e` and `e2e_single` fields). If not configured, all skills skip E2E references entirely — no `testFlow` field in stories, no E2E step in quality checks.
 - **Never overwrite existing project files** (docs/tech-debt.md, docs/testing/issues.md, docs/ideas/_index.md) — only create them if they don't exist. RALPH.md is the exception during reconfigure.
-- **This skill does NOT create a PRD.** That is `/prd-plan`'s job. `/init` saves the project name and type to RALPH.md, which `/prd-plan` reads to avoid re-asking.
+- **This skill does NOT create a PRD.** That is `/prd-plan`'s job. `/ralph-init` saves the project name and type to RALPH.md, which `/prd-plan` reads to avoid re-asking.
 - **Do NOT add AI co-author attribution to any commits.**

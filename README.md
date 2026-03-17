@@ -44,7 +44,7 @@ cp -r ralph-cc/templates/* your-project/
 
 | Skill | Description |
 |-------|-------------|
-| `/init` | Scaffold ralph into a project |
+| `/ralph-init` | Scaffold ralph into a project |
 | `/prd-plan` | Create or audit product requirements |
 | `/new-sprint` | Generate the next sprint from PRD/backlog |
 | `/start` | Session dispatcher -- picks up where you left off |

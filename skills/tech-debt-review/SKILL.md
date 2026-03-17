@@ -14,7 +14,7 @@ Prevents tech debt from silently accumulating by reviewing the tech debt file at
 Read `RALPH.md` to find:
 - `Documents.tech_debt` — path to the tech debt file
 
-If `RALPH.md` doesn't exist or is missing this path, tell the user: "RALPH.md is missing or incomplete. Run `/init` to set up your project."
+If `RALPH.md` doesn't exist or is missing this path, tell the user: "RALPH.md is missing or incomplete. Run `/ralph-init` to set up your project."
 
 ## When to Use
 

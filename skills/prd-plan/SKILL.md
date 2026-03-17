@@ -14,7 +14,7 @@ Create, extend, or audit a Product Requirements Document. The PRD is the master 
 Before anything else, check that `RALPH.md` exists in the project root.
 
 - **If RALPH.md is missing:** Stop immediately. Tell the user:
-  > "RALPH.md not found. Run `/init` first to set up ralph in this project."
+  > "RALPH.md not found. Run `/ralph-init` first to set up ralph in this project."
 - **If RALPH.md exists:** Read it. Pull out the `Project.Name`, `Project.Type`, and `Documents.prd` path. Use these throughout — do not re-ask questions that RALPH.md already answers.
 
 ---
