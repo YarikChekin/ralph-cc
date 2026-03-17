@@ -55,6 +55,7 @@ cp -r ralph-cc/templates/* your-project/
 | `/promote-idea` | Move an idea to the backlog |
 | `/tech-debt-review` | Assess tech debt health |
 | `/test` | Guided manual testing |
+| `/ralph-help` | Quick command reference |
 
 ## Workflow
 

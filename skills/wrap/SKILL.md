@@ -8,6 +8,8 @@ disable-model-invocation: true
 
 Run this when you're ending a session (context window getting large, need to stop, or switching tasks). This ensures nothing is lost and the next agent can pick up seamlessly.
 
+**When to wrap:** There's no hard rule, but wrapping proactively — before the context window fills up — produces better handoffs than waiting until the agent starts degrading. Monitor your context usage and wrap when you notice it getting heavy. A fresh session with clean context will outperform a long session with accumulated noise.
+
 ## Step 1: Read RALPH.md
 
 Read `RALPH.md` from the project root. You need:
