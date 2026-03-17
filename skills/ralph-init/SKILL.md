@@ -376,7 +376,9 @@ Silently scan the project to detect as much as possible. Do NOT ask the user any
 ### What to scan
 
 **Project identity:**
-- Directory name → project name
+- `CLAUDE.md` → often contains project name, description, tech stack, and commands (check this FIRST — it's the richest source)
+- `AGENTS.md` → may contain project context and conventions
+- Directory name → project name (fallback)
 - `package.json` → `name` and `description` fields
 - `README.md` → first heading or description line
 - `pyproject.toml` → `[project]` name and description
@@ -470,32 +472,7 @@ Leave optional fields blank (just the key with no value) if the user didn't prov
 
 ---
 
-## Step 5: Update CLAUDE.md (if exists)
-
-Check if `CLAUDE.md` exists in the project root.
-
-**If it exists**, read it and check if it already has a "Ralph Workflow" section. If it does NOT already have one, append the following to the end of the file:
-
-```markdown
-
-## Ralph Workflow
-
-This project uses ralph-cc for structured development. See `RALPH.md` for project configuration.
-
-Key commands:
-- `/start` — Begin a session (picks up where you left off)
-- `/new-sprint` — Generate the next sprint from the PRD
-- `/wrap` — End a session cleanly
-- `/ralph` — Quick sprint status check
-
-See the ralph-cc README for the full skill reference.
-```
-
-**If CLAUDE.md does not exist**, skip this step. Do not create a CLAUDE.md.
-
----
-
-## Step 6: Show Next Steps
+## Step 5: Show Next Steps
 
 After everything is written, display this summary:
 
