@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.0.1 — 2026-05-27
+
+- `/ralph-init` now walks users through the three v2 workflow toggles (Audit.mode, Merge.mode, Github.enabled) via an interactive batched `AskUserQuestion` in Step 3b, instead of silently writing defaults. Smart recommendations based on detected project context (GitHub remote presence, project type).
+- Step 4 substitutes the user's chosen toggle values directly into RALPH.md instead of hardcoded defaults.
+- Step 5 summary reflects the chosen toggles so the user sees exactly what was written.
+
+No behavior change in the core Ralph loop — only the init flow.
+
 ## 2.0.0 — 2026-05-27
 
 Major release. Ports the audit-loop evolution back from a year of in-flight learning. Breaking change in agent shape and prd.json AC format; runtime back-compat preserved via legacy-string-AC support and optional RALPH.md sections.

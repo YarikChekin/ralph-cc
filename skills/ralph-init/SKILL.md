@@ -476,11 +476,61 @@ Does this look right? Let me know what to change, or say **"looks good"** to con
 **For any field that couldn't be detected**, show it as `(not detected — please provide)` and the user can fill it in.
 
 **The user responds in one of three ways:**
-1. **"looks good"** / **"yes"** / confirms → proceed to Step 4 with detected values
+1. **"looks good"** / **"yes"** / confirms → proceed to Step 3b with detected values
 2. **Provides corrections** (e.g., "description should be X, and lint is `npm run lint:fix`") → update the values and proceed
 3. **Asks to change specific fields** → update and show the summary again for confirmation
 
 This should be **one interaction** for most projects. Only ask follow-up questions if critical fields couldn't be detected (name and description are the most likely to need user input for new/empty projects).
+
+---
+
+## Step 3b: Configure v2 Workflow Toggles
+
+ralph-cc v2 introduces three workflow toggles in `RALPH.md` — Audit, Merge, and GitHub. Walk the user through them so they understand what they're opting into. Use `AskUserQuestion` with the three questions below, in a single batched call so the user answers all three at once rather than three sequential interactions.
+
+**Auto-detection hints (use to set "Recommended" defaults):**
+- If `.git/config` shows a GitHub remote → recommend `Merge.mode = pr` and `Github.enabled = true`
+- If no `.git` directory or no GitHub remote → recommend `Merge.mode = local` and `Github.enabled = false`
+- For solo / experimental projects (project type detected as `product` in Step 3a, very small codebase) → recommend `Audit.mode = sprint-close`
+- For projects with existing test infrastructure or production-bound work → recommend `Audit.mode = per-story`
+- Default the recommendation when truly ambiguous → all back-compat (`sprint-close` + `local` + `false`)
+
+**Question 1 — Audit mode:**
+
+> "How aggressively should the auditor verify work?"
+>
+> - **sprint-close** — auditor runs once before merge as a branch-level sweep. Lower friction. (Recommended for solo experimentation.)
+> - **per-story** — auditor is spawned as a long-lived teammate; signs off after every `feat:` commit before the lead advances. Higher quality bar. (Recommended for production / research-grade work.)
+> - **off** — no audit. Lead flips `passes: true` itself.
+
+Mark whichever matches your project-context heuristic as "(Recommended)".
+
+**Question 2 — Merge mode:**
+
+> "How do you want to merge completed sprints?"
+>
+> - **local** — `/start` Case D merges directly to the base branch via `git merge`. No PR. (Recommended when you don't use GitHub PRs.)
+> - **pr** — `/start` Case D opens a PR via `gh pr create`; Case D2 handles approved/changes-requested states. Requires `gh` CLI installed and authenticated. (Recommended when you have a GitHub remote.)
+
+**Question 3 — GitHub integration:**
+
+> "Surface GitHub Issues in `/start` and let `/new-sprint` build sprints from issue numbers?"
+>
+> - **true** — `/start` shows open `gh issue list` results alongside the sprint dashboard; `/new-sprint` accepts issue numbers as a source (`source: "github-issue"`, `sourceIssues: [N]`); sprint-close auto-closes via `Fixes #N` keywords. Requires `gh` CLI installed and authenticated.
+> - **false** — uses only local backlog/issues files (`docs/POST_MVP_IMPROVEMENTS.md`, `docs/testing/issues.md`).
+
+After the user answers, briefly reflect back the chosen toggles:
+
+```
+Workflow toggles set:
+  Audit.mode    = [choice]
+  Merge.mode    = [choice]
+  Github.enabled = [choice]
+
+You can edit these in RALPH.md anytime, or re-run /ralph-init to reconfigure.
+```
+
+If the user picks `Merge.mode = pr` or `Github.enabled = true`, **silently verify** `gh` is installed (`gh --version`) and authenticated (`gh auth status`). If either check fails, warn the user once but proceed — the skill is configuration, not enforcement; the user can install/authenticate `gh` later.
 
 ---
 
@@ -516,24 +566,22 @@ test_plan: scripts/ralph/test-plan.json
 test_progress: scripts/ralph/test-progress.txt
 
 ## Audit
-mode: sprint-close
+mode: [from Step 3b — sprint-close | per-story | off]
 reports_dir: scripts/ralph/audit-reports
 
 ## Merge
-mode: local
+mode: [from Step 3b — local | pr]
 branch_base: main
 
 ## Github
-enabled: false
+enabled: [from Step 3b — true | false]
 
 ## Git
 commit_format: feat: [{story_id}] - [{title}]
 branch_prefix: ralph/
 ```
 
-Leave optional fields blank (just the key with no value) if the user didn't provide them.
-
-**Audit / Merge / Github defaults:** Use the values shown above (`mode: sprint-close`, `mode: local`, `enabled: false`). They give back-compatible behavior with v1 (single audit before merge, local git merge, no GitHub integration). Users can edit RALPH.md later to opt into per-story audit, PR-based merge, or GitHub Issues sourcing — explain this briefly when showing the next-steps message in Step 5.
+Leave optional fields blank (just the key with no value) if the user didn't provide them. Substitute the three workflow-toggle values from Step 3b directly — do not hardcode defaults if the user picked something else.
 
 ---
 
@@ -552,10 +600,10 @@ Created:
   docs/testing/issues.md            — bug tracking
   docs/ideas/_index.md              — idea capture
 
-Defaults set in RALPH.md (edit anytime):
-  Audit.mode    = sprint-close   (set to per-story for closer review; off to disable)
-  Merge.mode    = local          (set to pr for PR-based merge via gh CLI)
-  Github.enabled = false         (set to true to surface gh issues in /start and /new-sprint)
+Workflow toggles in RALPH.md (from Step 3b — edit anytime to change):
+  Audit.mode    = [user's choice]
+  Merge.mode    = [user's choice]
+  Github.enabled = [user's choice]
 
 Next steps:
   1. Run /prd-plan to define your product requirements

@@ -6,7 +6,7 @@
       "name": "ralph-cc",
       "source": "./",
       "description": "Spec-driven development workflow for Claude Code",
-      "version": "2.0.0"
+      "version": "2.0.1"
     }
   ]
 }
