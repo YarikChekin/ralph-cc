@@ -1,14 +1,14 @@
 ---
 name: wrap
-description: Clean handoff when ending a session — commits WIP, logs progress, and summarizes for the next agent
+description: Clean handoff when ending a session — commits WIP, logs progress, signals the auditor teammate to flush state, and summarizes for the next agent
 disable-model-invocation: true
 ---
 
 # /wrap — Clean Session Handoff
 
-Run this when you're ending a session (context window getting large, need to stop, or switching tasks). This ensures nothing is lost and the next agent can pick up seamlessly.
+Run this when you're ending a session (context window getting large — nudge at 40%, strongly recommended at 60% on a 1M window; check with `/ctx` — or you need to stop, or you're switching tasks). This ensures nothing is lost and the next agent can pick up seamlessly.
 
-**When to wrap:** There's no hard rule, but wrapping proactively — before the context window fills up — produces better handoffs than waiting until the agent starts degrading. Monitor your context usage and wrap when you notice it getting heavy. A fresh session with clean context will outperform a long session with accumulated noise.
+**When to wrap:** Wrapping proactively — before the context window fills up — produces better handoffs than waiting until the agent starts degrading. Degradation tracks absolute token count and is noticeable well before the model "fails." Auto-compaction is lossy, so wrap (clean handoff) *before* it. A fresh session with clean context will outperform a long session with accumulated noise.
 
 ## Step 1: Read RALPH.md
 
@@ -150,6 +150,44 @@ Run /start to pick up where this left off. The next agent will see
 the active test plan and continue from [current test case].
 ```
 
+## Auditor Cleanup (dual-cleanup protocol — Audit.mode = per-story)
+
+If an **auditor agent teammate** is alive in this session (the lead spawned it during a Ralph sprint with `Audit.mode = per-story`), `/wrap` MUST signal the auditor to flush state BEFORE the lead exits. Both agents wrap together so the next session can resume cleanly.
+
+### How to detect an alive auditor
+
+Check `~/.claude/teams/ralph/config.json` for an active member named `auditor`. If the team file exists and `auditor` is a member, run the dual-cleanup flow below. If it doesn't exist (Audit.mode is `off` or `sprint-close`, or this is a non-Ralph session), skip to the lead-only flow.
+
+### Dual-cleanup flow (run BEFORE the lead's own wrap)
+
+1. **Send wrap signal to auditor:**
+   ```
+   SendMessage({
+     to: "auditor",
+     summary: "wrap and exit",
+     message: "wrap and exit. flush in-flight report state to audit-progress.txt. ack with 'wrap complete' when done."
+   })
+   ```
+2. **Wait for the auditor's `wrap complete` reply.** It arrives as an auto-delivered conversation turn. Do NOT proceed to the lead's own /wrap until the ack lands. If the auditor doesn't ack within ~3 minutes, surface the situation to the user — there may be a stuck audit; the user decides whether to force-exit.
+3. **Auditor side** (handled inside `agents/auditor.md` "Wrap protocol" section):
+   - Commits any in-flight `R-<STORY-ID>.md` (incomplete sections marked explicitly).
+   - Appends a `## [ISO timestamp] - WRAP` entry to `<Audit.reports_dir>/audit-progress.txt` summarizing what was audited and what's pending.
+   - SendMessages `"wrap complete"` to the lead.
+   - Exits cleanly.
+4. **Team config persists across sprints — do not tear down.** Whether you're mid-sprint or post-merge, leave `~/.claude/teams/ralph/config.json` in place. The next sprint's `/start` checks for the existing team and re-spawns the auditor as a member without re-creating it. `TeamDelete` exists only for recovery scenarios (corrupted config, stale roster after a process crash); never run it as part of normal sprint close. Reuse is the design.
+
+### After the auditor wrap completes
+
+Continue with the lead's own /wrap flow above — WIP commit, append to `progress.txt`, exit. The progress.txt handoff entry should reference the auditor's `audit-progress.txt` last-entry so the next session knows where to look:
+
+```
+- Auditor wrap state: see <Audit.reports_dir>/audit-progress.txt last entry
+```
+
+### Why this matters
+
+Auditor context (typically Sonnet) fills faster than lead context (typically Opus), so the auditor often hits its limit first. Synchronizing wraps simplifies handoff state — `audit-progress.txt` and per-story `R-XXX.md` reports give the new auditor enough context to resume without state loss. Abandoning an in-flight audit silently risks `passes: true` flips on stories the auditor never finished verifying.
+
 ## Important Rules
 
 - ALWAYS commit before wrapping, even if the code is broken — losing work is worse than a broken WIP commit
@@ -157,3 +195,4 @@ the active test plan and continue from [current test case].
 - NEVER delete or replace existing progress/log content — only append
 - Keep handoff notes specific and actionable
 - In testing workflow, always update the test plan file with the current state before committing
+- If `Audit.mode = per-story`, run the auditor dual-cleanup BEFORE the lead's own wrap

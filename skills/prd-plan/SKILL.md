@@ -487,6 +487,8 @@ Updated RALPH.md to point to the new PRD.
 Next step: Run /new-sprint to generate your first sprint from this PRD.
 ```
 
+3. **Note on acceptance criteria:** `/new-sprint` will translate your numbered requirements (FR-X.Y.Z) into acceptance criteria for each story. The PRD itself doesn't need to specify AC shape — but be aware that in v2, ACs are object-form (`{ text, humanGated? }`) and any requirement that needs the operator to take action on a third-party system (dashboards, real devices, app store portals) should be phrased so the sprint generator can flag it `humanGated: true`. State plainly when something needs human verification rather than burying it in passing prose.
+
 3. **Do NOT start implementing.** The PRD is a planning document. Implementation happens through `/new-sprint` and the Ralph loop.
 
 ---

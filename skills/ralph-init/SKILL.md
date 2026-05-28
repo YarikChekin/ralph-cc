@@ -33,7 +33,9 @@ Create the following files and directories. Use `mkdir -p` to create directories
 
 ### scripts/ralph/prompt.md
 
-Copy the ralph agent instructions. This is the core execution loop that the Ralph agent follows when working on stories. Write the following content:
+Copy the ralph agent instructions. **Source of truth: the plugin's `templates/scripts/ralph/prompt.md` file** — when scaffolding, read that file from the installed plugin and copy its content verbatim into the project. The inline copy below is for reference / fallback if the template can't be read.
+
+Write the following content (or whatever the latest plugin template says):
 
 ```markdown
 # Ralph Agent Instructions
@@ -42,7 +44,7 @@ You are an autonomous coding agent working on a software project.
 
 ## Your Task
 
-1. Read RALPH.md to understand project config, quality commands, and document paths
+1. Read RALPH.md to understand project config, quality commands, document paths, and Audit/Merge/Github settings.
 2. Read the PRD at `prd.json` (in the same directory as this file)
 3. Read the progress log at `progress.txt` (check Codebase Patterns section first)
 4. Check you're on the correct branch from PRD `branchName`. If not, check it out or create from main.
@@ -53,8 +55,24 @@ You are an autonomous coding agent working on a software project.
 9. If the story has a `testFlow` and RALPH.md has `e2e_single` configured, run the E2E command with the flow path
 10. Update AGENTS.md files if you discover reusable patterns (see below)
 11. If all checks pass, commit ALL changes with message: `feat: [Story ID] - [Story Title]`
-12. Update the PRD to set `passes: true` for the completed story
-13. Append your progress to `progress.txt`
+12. **Audit gate** — see "Audit Gate" below. Behavior depends on RALPH.md Audit.mode.
+13. After the audit verdict resolves (or immediately if Audit.mode is `off` or `sprint-close`), append progress to `progress.txt`.
+
+## Acceptance criteria format
+
+Acceptance criteria can be either:
+- A string (legacy): `"Typecheck passes"` — treated as `humanGated: false`
+- An object: `{ "text": "Typecheck passes" }` or `{ "text": "...", "humanGated": true }`
+
+`humanGated: true` means the auditor cannot verify the AC alone — the operator must take action on a system the coding agent cannot reach. The auditor will mark these `PENDING (human-gated)` and the story stays `passes: false` until the operator confirms.
+
+## Audit Gate
+
+Behavior is set by RALPH.md Audit.mode:
+
+- **`off`** — no audit. The lead flips `passes: true` itself.
+- **`sprint-close`** (default) — no per-story audit. After all stories complete, the auditor runs the sprint-close branch sweep before merge.
+- **`per-story`** — strict. After each `feat:` commit, the lead messages the auditor teammate, waits for the verdict, and ONLY flips `passes: true` in a separate `chore(ralph)` commit after the auditor returns `SIGN OFF`. Verdicts: SIGN OFF → chore commit + advance; PASS-PENDING-HUMAN → surface humanGated AC text, wait for operator; REQUEST CHANGES / FAIL → fix + re-message (cap 3); BLOCK → stop.
 
 ## Git Commit Rules
 
@@ -230,11 +248,7 @@ All user stories in this prd.json have been implemented and are passing.
 **Stories completed:** [count]
 
 ### Recommended Next Steps:
-1. Review the changes on this branch
-2. Merge to main when ready: `git checkout main && git merge [branchName]`
-3. Archive prd.json: `cp scripts/ralph/prd.json scripts/ralph/archive/[feature]-prd.json`
-4. Create the next prd.json for the next feature
-5. Do NOT reset progress.txt - it's a living document that preserves all learnings
+Run `/start` — Case D (Merge.mode=local) or Case D2 (Merge.mode=pr) handles sprint-close audit, version bump, and merge.
 
 <promise>COMPLETE</promise>
 ---
@@ -248,6 +262,7 @@ All user stories in this prd.json have been implemented and are passing.
 - Read the Codebase Patterns section in progress.txt before starting
 - Consult the design doc configured in RALPH.md (if any) for UI/UX guidelines
 - Do NOT add AI co-author attribution to commits
+- In Audit.mode = `per-story`, NEVER flip `passes: true` yourself. The auditor authorizes; you execute via `chore(ralph)` commit.
 ```
 
 ### scripts/ralph/prd.json.example
@@ -267,9 +282,9 @@ Copy the example sprint format so users have a reference. Write the following co
       "title": "Add users table and auth schema",
       "description": "Set up the database schema for user authentication.",
       "acceptanceCriteria": [
-        "Create users table with email, password_hash, created_at columns",
-        "Add migration file",
-        "Typecheck passes"
+        { "text": "users table created with email, password_hash, created_at columns" },
+        { "text": "Migration file added under the project's migrations directory" },
+        { "text": "Typecheck passes" }
       ],
       "priority": 1,
       "passes": false,
@@ -281,15 +296,16 @@ Copy the example sprint format so users have a reference. Write the following co
       "title": "Create login screen with form validation",
       "description": "Build the login UI with email/password fields and client-side validation.",
       "acceptanceCriteria": [
-        "Login form with email and password fields",
-        "Client-side validation (email format, password length)",
-        "Error messages for invalid input",
-        "Typecheck passes"
+        { "text": "Login form renders email and password fields" },
+        { "text": "Client-side validation blocks invalid email format and short passwords" },
+        { "text": "Inline error messages appear for invalid input" },
+        { "text": "Typecheck passes" },
+        { "text": "Operator confirms tab/enter focus behavior on a real keyboard", "humanGated": true }
       ],
       "priority": 2,
       "passes": false,
       "testFlow": null,
-      "notes": "Follow existing form patterns in the codebase."
+      "notes": "Follow existing form patterns in the codebase. Reuse the shared Input component if one exists."
     }
   ]
 }
@@ -364,6 +380,42 @@ Living index of product ideas. Use `/new-idea` to add new entries.
 | Idea | Status | Effort | Value | File |
 |------|--------|--------|-------|------|
 ```
+
+### scripts/ralph/audit-reports/PATTERNS.md
+
+Create if it does NOT already exist. Write a stub that the auditor will populate over time:
+
+```markdown
+# Auditor PATTERNS
+
+This file is the auditor's distilled cross-session memory. The auditor reads it at the start of every session and curates it as it discovers new patterns.
+
+**Curation rules:**
+- Target ≤150 lines total. Quality over quantity.
+- Replace stale entries (not just append). Merge duplicates.
+- Group by category: schema gotchas, common miss patterns, project conventions, recurring spec errors.
+- Each entry should be load-bearing — if removing it wouldn't hurt a future audit, drop it.
+
+---
+
+## Schema gotchas
+
+(Populated as patterns are discovered.)
+
+## Common miss patterns (project-specific)
+
+(Populated as patterns are discovered.)
+
+## Project conventions
+
+(Populated as patterns are discovered.)
+
+## Recurring spec errors in PRDs
+
+(Populated as patterns are discovered.)
+```
+
+Also create an empty `.gitkeep` at `scripts/ralph/audit-reports/.gitkeep` so the directory persists even if PATTERNS.md is the only initial content.
 
 **After scaffolding, tell the user what was created (list each file) and what was skipped (already existed).**
 
@@ -463,12 +515,25 @@ ideas: docs/ideas/_index.md
 test_plan: scripts/ralph/test-plan.json
 test_progress: scripts/ralph/test-progress.txt
 
+## Audit
+mode: sprint-close
+reports_dir: scripts/ralph/audit-reports
+
+## Merge
+mode: local
+branch_base: main
+
+## Github
+enabled: false
+
 ## Git
 commit_format: feat: [{story_id}] - [{title}]
 branch_prefix: ralph/
 ```
 
 Leave optional fields blank (just the key with no value) if the user didn't provide them.
+
+**Audit / Merge / Github defaults:** Use the values shown above (`mode: sprint-close`, `mode: local`, `enabled: false`). They give back-compatible behavior with v1 (single audit before merge, local git merge, no GitHub integration). Users can edit RALPH.md later to opt into per-story audit, PR-based merge, or GitHub Issues sourcing — explain this briefly when showing the next-steps message in Step 5.
 
 ---
 
@@ -480,11 +545,17 @@ After everything is written, display this summary:
 Ralph initialized!
 
 Created:
-  RALPH.md              — project configuration
-  scripts/ralph/        — agent instructions and sprint data
-  docs/tech-debt.md     — tech debt tracking
-  docs/testing/issues.md — bug tracking
-  docs/ideas/_index.md  — idea capture
+  RALPH.md                          — project configuration
+  scripts/ralph/                    — agent instructions and sprint data
+  scripts/ralph/audit-reports/      — durable audit memory (PATTERNS.md + per-story reports)
+  docs/tech-debt.md                 — tech debt tracking
+  docs/testing/issues.md            — bug tracking
+  docs/ideas/_index.md              — idea capture
+
+Defaults set in RALPH.md (edit anytime):
+  Audit.mode    = sprint-close   (set to per-story for closer review; off to disable)
+  Merge.mode    = local          (set to pr for PR-based merge via gh CLI)
+  Github.enabled = false         (set to true to surface gh issues in /start and /new-sprint)
 
 Next steps:
   1. Run /prd-plan to define your product requirements

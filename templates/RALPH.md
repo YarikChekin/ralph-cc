@@ -24,6 +24,17 @@ ideas: docs/ideas/_index.md
 test_plan: scripts/ralph/test-plan.json
 test_progress: scripts/ralph/test-progress.txt
 
+## Audit (optional — defaults: mode=sprint-close, reports_dir=scripts/ralph/audit-reports)
+mode: sprint-close          # off | sprint-close | per-story
+reports_dir: scripts/ralph/audit-reports
+
+## Merge (optional — defaults: mode=local, branch_base=main)
+mode: local                  # local | pr
+branch_base: main
+
+## Github (optional — defaults: enabled=false)
+enabled: false               # if true, /start surfaces gh issues, /new-sprint accepts issue sources
+
 ## Git
 commit_format: feat: [{story_id}] - [{title}]
 branch_prefix: ralph/

@@ -1,13 +1,14 @@
 {
   "name": "ralph-cc",
-  "version": "1.0.0",
-  "description": "Spec-driven development workflow for Claude Code — sprint planning, session management, and idea pipeline",
+  "version": "2.0.0",
+  "description": "Spec-driven development workflow for Claude Code — sprint planning, session management, audit teammate, and idea pipeline",
   "keywords": [
     "claude-code",
     "ralph",
     "workflow",
     "sprint",
     "agent",
+    "audit",
     "ai",
     "development"
   ],

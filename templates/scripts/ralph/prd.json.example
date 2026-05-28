@@ -10,9 +10,9 @@
       "title": "Add users table and auth schema",
       "description": "Set up the database schema for user authentication.",
       "acceptanceCriteria": [
-        "Create users table with email, password_hash, created_at columns",
-        "Add migration file",
-        "Typecheck passes"
+        { "text": "users table created with email, password_hash, created_at columns" },
+        { "text": "Migration file added under the project's migrations directory" },
+        { "text": "Typecheck passes" }
       ],
       "priority": 1,
       "passes": false,
@@ -24,15 +24,16 @@
       "title": "Create login screen with form validation",
       "description": "Build the login UI with email/password fields and client-side validation.",
       "acceptanceCriteria": [
-        "Login form with email and password fields",
-        "Client-side validation (email format, password length)",
-        "Error messages for invalid input",
-        "Typecheck passes"
+        { "text": "Login form renders email and password fields" },
+        { "text": "Client-side validation blocks invalid email format and short passwords" },
+        { "text": "Inline error messages appear for invalid input" },
+        { "text": "Typecheck passes" },
+        { "text": "Operator confirms tab/enter focus behavior on a real keyboard", "humanGated": true }
       ],
       "priority": 2,
       "passes": false,
       "testFlow": null,
-      "notes": "Follow existing form patterns in the codebase."
+      "notes": "Follow existing form patterns in the codebase. Reuse the shared Input component if one exists."
     }
   ]
 }

@@ -48,19 +48,21 @@ Copy this into a new Claude Code session to start/continue the sprint:
 Then output this exact prompt inside a code block:
 
 ```
-Read RALPH.md first to understand project config (paths, commands, tech stack).
+Read RALPH.md first to understand project config (paths, commands, tech stack, Audit.mode, Merge.mode, Github.enabled).
 
 Your job is to execute the Ralph agent loop. Before writing any code, read these files to understand the project, the current sprint, and past learnings:
 
 1. scripts/ralph/prompt.md — your full Ralph instructions (follow exactly)
 2. scripts/ralph/prd.json — the current sprint and user stories
 3. scripts/ralph/progress.txt — codebase patterns and learnings from past sprints (read the "Codebase Patterns" section carefully)
-4. RALPH.md — project config, quality commands, document paths
+4. RALPH.md — project config, quality commands, document paths, Audit/Merge/Github settings
 5. CLAUDE.md — project overview (if it exists)
 6. AGENTS.md — codebase conventions (if it exists)
 7. Design doc from RALPH.md Documents.design (if configured)
 
-After reading all context files, follow the Ralph prompt: pick the highest priority story where passes: false, implement it, run quality checks, commit, update the PRD, and log progress.
+After reading all context files, follow the Ralph prompt: pick the highest priority story where passes: false, implement it, run quality checks, commit, then process the audit gate per RALPH.md Audit.mode (off → flip passes yourself; sprint-close → flip passes, branch audit runs at merge; per-story → SendMessage the auditor, wait for SIGN OFF, then chore commit to flip passes), and log progress.
+
+Acceptance criteria are objects: `{ text, humanGated? }`. Legacy string ACs are still accepted. humanGated ACs must be confirmed by the operator before passes can flip.
 
 Work on ONE story per response. After completing a story, stop so I can review before continuing.
 
