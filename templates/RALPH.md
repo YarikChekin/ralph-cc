@@ -24,9 +24,10 @@ ideas: docs/ideas/_index.md
 test_plan: scripts/ralph/test-plan.json
 test_progress: scripts/ralph/test-progress.txt
 
-## Audit (optional — defaults: mode=sprint-close, reports_dir=scripts/ralph/audit-reports)
+## Audit (optional — defaults: mode=sprint-close, reports_dir=scripts/ralph/audit-reports, team_name=ralph-<project folder>)
 mode: sprint-close          # off | sprint-close | per-story
 reports_dir: scripts/ralph/audit-reports
+team_name: ralph-my-project # MUST be unique per project — Claude Code teams are machine-global; two projects sharing a team name cross-wire their agents
 
 ## Merge (optional — defaults: mode=local, branch_base=main)
 mode: local                  # local | pr

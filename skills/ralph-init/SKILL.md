@@ -568,6 +568,7 @@ test_progress: scripts/ralph/test-progress.txt
 ## Audit
 mode: [from Step 3b — sprint-close | per-story | off]
 reports_dir: scripts/ralph/audit-reports
+team_name: ralph-[kebab-cased project folder name — MUST be unique per project; teams are machine-global]
 
 ## Merge
 mode: [from Step 3b — local | pr]

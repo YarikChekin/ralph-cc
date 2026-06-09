@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.2 — 2026-06-09
+
+- **Per-project team names (fixes cross-project agent cross-wiring).** All skills and the auditor agent now resolve the coordination team as `<team>` = RALPH.md `Audit.team_name`, defaulting to `ralph-<project-folder>` — never the bare literal `ralph`. Claude Code teams are machine-global (`~/.claude/teams/`), so the old hardcoded name made any two projects running Ralph concurrently share one team: a lead in one repo could wake an idle session in another repo and send it work (observed in the field running closetize-app and closetize-website side by side). `/ralph-init` now writes `team_name` into RALPH.md explicitly; existing projects should add the key (or rely on the derived default) — their next `/start` spawns a fresh, correctly-namespaced team.
+
 ## 2.0.1 — 2026-05-27
 
 - `/ralph-init` now walks users through the three v2 workflow toggles (Audit.mode, Merge.mode, Github.enabled) via an interactive batched `AskUserQuestion` in Step 3b, instead of silently writing defaults. Smart recommendations based on detected project context (GitHub remote presence, project type).

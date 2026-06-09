@@ -310,10 +310,12 @@ Write the draft PRD to a temp path so the auditor can read it without conflictin
 # echo "<draft prd json>" > /tmp/draft-prd.json
 ```
 
-Then check if a `ralph` team already exists at `~/.claude/teams/ralph/config.json`. If yes (a sprint is in progress, auditor is alive), reuse it. If not, create one:
+> **Team name (`<team>`):** resolve once per session — `team_name` from RALPH.md's `## Audit` section if set, otherwise `ralph-<project-folder>` (the kebab-cased basename of the repo root, e.g. `ralph-closetize-website`). Never use the bare name `ralph`: teams are machine-global (`~/.claude/teams/`), shared across every terminal and directory, so a fixed literal name cross-wires concurrent Ralph projects — a lead in one repo can wake an idle session in another repo and send it work.
+
+Then check if the `<team>` team already exists at `~/.claude/teams/<team>/config.json`. If yes (a sprint is in progress, auditor is alive), reuse it. If not, create one:
 
 ```
-TeamCreate({ team_name: "ralph", agent_type: "team-lead", description: "Ralph sprint coordination" })
+TeamCreate({ team_name: "<team>", agent_type: "team-lead", description: "Ralph sprint coordination" })
 ```
 
 Spawn the auditor (skip if already a member):
@@ -321,10 +323,10 @@ Spawn the auditor (skip if already a member):
 ```
 Agent({
   subagent_type: "auditor",
-  team_name: "ralph",
+  team_name: "<team>",
   name: "auditor",
   description: "Ralph sprint auditor — PRD review mode",
-  prompt: "You are joining the 'ralph' team as the auditor. Your first task is PRD review. Run setup per agents/auditor.md. Then go idle and wait for an 'audit prd' message."
+  prompt: "You are joining the '<team>' team as the auditor. Your first task is PRD review. Run setup per agents/auditor.md. Then go idle and wait for an 'audit prd' message."
 })
 ```
 

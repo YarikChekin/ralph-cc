@@ -156,7 +156,9 @@ If an **auditor agent teammate** is alive in this session (the lead spawned it d
 
 ### How to detect an alive auditor
 
-Check `~/.claude/teams/ralph/config.json` for an active member named `auditor`. If the team file exists and `auditor` is a member, run the dual-cleanup flow below. If it doesn't exist (Audit.mode is `off` or `sprint-close`, or this is a non-Ralph session), skip to the lead-only flow.
+> **Team name (`<team>`):** resolve once per session — `team_name` from RALPH.md's `## Audit` section if set, otherwise `ralph-<project-folder>` (the kebab-cased basename of the repo root, e.g. `ralph-closetize-website`). Never use the bare name `ralph`: teams are machine-global (`~/.claude/teams/`), shared across every terminal and directory, so a fixed literal name cross-wires concurrent Ralph projects — a lead in one repo can wake an idle session in another repo and send it work.
+
+Check `~/.claude/teams/<team>/config.json` for an active member named `auditor`. If the team file exists and `auditor` is a member, run the dual-cleanup flow below. If it doesn't exist (Audit.mode is `off` or `sprint-close`, or this is a non-Ralph session), skip to the lead-only flow.
 
 ### Dual-cleanup flow (run BEFORE the lead's own wrap)
 
@@ -174,7 +176,7 @@ Check `~/.claude/teams/ralph/config.json` for an active member named `auditor`. 
    - Appends a `## [ISO timestamp] - WRAP` entry to `<Audit.reports_dir>/audit-progress.txt` summarizing what was audited and what's pending.
    - SendMessages `"wrap complete"` to the lead.
    - Exits cleanly.
-4. **Team config persists across sprints — do not tear down.** Whether you're mid-sprint or post-merge, leave `~/.claude/teams/ralph/config.json` in place. The next sprint's `/start` checks for the existing team and re-spawns the auditor as a member without re-creating it. `TeamDelete` exists only for recovery scenarios (corrupted config, stale roster after a process crash); never run it as part of normal sprint close. Reuse is the design.
+4. **Team config persists across sprints — do not tear down.** Whether you're mid-sprint or post-merge, leave `~/.claude/teams/<team>/config.json` in place. The next sprint's `/start` checks for the existing team and re-spawns the auditor as a member without re-creating it. `TeamDelete` exists only for recovery scenarios (corrupted config, stale roster after a process crash); never run it as part of normal sprint close. Reuse is the design.
 
 ### After the auditor wrap completes
 

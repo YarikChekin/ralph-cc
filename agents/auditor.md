@@ -330,4 +330,4 @@ On the next session start, when you receive your first message, the setup flow a
 
 - Tool tokens (MCP auth, external service credentials) can expire mid-session. If you get auth errors, message the lead asking the user to re-auth.
 - Line numbers in ACs drift as the codebase grows. The coding agent greps for functions by name — stale line refs are not blockers. Note them for posterity cleanup if egregious.
-- Team config (`~/.claude/teams/ralph/config.json`) persists across sprints by design. Don't tear it down on wrap. The next sprint reuses the same team.
+- Team config (`~/.claude/teams/<team>/config.json`, where `<team>` is this project's team name — RALPH.md `Audit.team_name`, default `ralph-<project-folder>`) persists across sprints by design. Don't tear it down on wrap. The next sprint reuses the same team.

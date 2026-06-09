@@ -174,12 +174,14 @@ Branch: [branchName]
 Stories completed: [total]
 ```
 
+> **Team name (`<team>`):** resolve once per session — `team_name` from RALPH.md's `## Audit` section if set, otherwise `ralph-<project-folder>` (the kebab-cased basename of the repo root, e.g. `ralph-closetize-website`). Never use the bare name `ralph`: teams are machine-global (`~/.claude/teams/`), shared across every terminal and directory, so a fixed literal name cross-wires concurrent Ralph projects — a lead in one repo can wake an idle session in another repo and send it work.
+
 **Sprint-close audit:**
 
 - If `Audit.mode = off` — skip the audit.
 - If `Audit.mode = sprint-close` or `per-story` — run the sprint-close branch sweep:
   ```
-  Agent({ subagent_type: "auditor", team_name: "ralph", name: "auditor", description: "Ralph sprint auditor",
+  Agent({ subagent_type: "auditor", team_name: "<team>", name: "auditor", description: "Ralph sprint auditor",
           prompt: "Run setup per agents/auditor.md, then audit branch sprint-close. Write to <Audit.reports_dir>/BRANCH-AUDIT-<branch-name>.md. SendMessage the verdict back." })
   ```
   Wait for the verdict, then show it to the user.
@@ -337,11 +339,11 @@ The auditor agent (`agents/auditor.md`) runs as a long-lived teammate. The lead 
 
 **Spawning the auditor (first story of session):**
 
-Check if the team already exists at `~/.claude/teams/ralph/config.json`. If yes, the team is alive — verify the auditor is a member; if so, skip ahead to "subsequent stories." If the team file doesn't exist, create it:
+Check if the team already exists at `~/.claude/teams/<team>/config.json`. If yes, the team is alive — verify the auditor is a member; if so, skip ahead to "subsequent stories." If the team file doesn't exist, create it:
 
 ```
 TeamCreate({
-  team_name: "ralph",
+  team_name: "<team>",
   agent_type: "team-lead",
   description: "Ralph sprint coordination — lead + auditor"
 })
@@ -352,10 +354,10 @@ Then spawn the auditor:
 ```
 Agent({
   subagent_type: "auditor",
-  team_name: "ralph",
+  team_name: "<team>",
   name: "auditor",
   description: "Ralph sprint auditor",
-  prompt: "You are joining the 'ralph' team as the auditor. Run setup per agents/auditor.md (read RALPH.md, PRD, PATTERNS.md, audit-progress.txt last entry, progress.txt last entry, git state). Then go idle and wait for an audit task message from team-lead."
+  prompt: "You are joining the '<team>' team as the auditor. Run setup per agents/auditor.md (read RALPH.md, PRD, PATTERNS.md, audit-progress.txt last entry, progress.txt last entry, git state). Then go idle and wait for an audit task message from team-lead."
 })
 ```
 
@@ -384,4 +386,4 @@ Then **wait for the auditor's reply** — it auto-delivers as a new conversation
 
 **Subsequent stories in the same sprint:** the auditor is already alive and idle — just SendMessage the per-story audit task. No re-spawn needed.
 
-**At sprint merge:** team config persists across sprints by design — do not tear down. The next sprint reuses the same `ralph` team; `/start` checks for the existing config and re-spawns the auditor as a member if needed. Mid-sprint `/wrap` explicitly preserves the team for resume. `TeamDelete` is for recovery scenarios only (corrupted config, stale roster after a crash) — never run it as part of normal sprint close.
+**At sprint merge:** team config persists across sprints by design — do not tear down. The next sprint reuses the same `<team>` team; `/start` checks for the existing config and re-spawns the auditor as a member if needed. Mid-sprint `/wrap` explicitly preserves the team for resume. `TeamDelete` is for recovery scenarios only (corrupted config, stale roster after a crash) — never run it as part of normal sprint close.

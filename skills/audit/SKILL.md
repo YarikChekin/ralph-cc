@@ -16,19 +16,21 @@ The `/audit` skill is a thin wrapper around `agents/auditor.md`. The auditor age
 
 ## What this skill does
 
+> **Team name (`<team>`):** resolve once per session — `team_name` from RALPH.md's `## Audit` section if set, otherwise `ralph-<project-folder>` (the kebab-cased basename of the repo root, e.g. `ralph-closetize-website`). Never use the bare name `ralph`: teams are machine-global (`~/.claude/teams/`), shared across every terminal and directory, so a fixed literal name cross-wires concurrent Ralph projects — a lead in one repo can wake an idle session in another repo and send it work.
+
 Spawn the auditor agent and hand off to it.
 
 ```
 Agent({
   subagent_type: "auditor",
-  team_name: "ralph",
+  team_name: "<team>",
   name: "auditor",
   description: "Ralph sprint auditor",
   prompt: "Run setup per agents/auditor.md, then audit <STORY-ID> at commit <SHA>. Report verdict via SendMessage to team-lead."
 })
 ```
 
-If no team exists yet, create one first via `TeamCreate({ team_name: "ralph", agent_type: "team-lead", description: "Ralph sprint coordination" })`.
+If no team exists yet, create one first via `TeamCreate({ team_name: "<team>", agent_type: "team-lead", description: "Ralph sprint coordination" })`.
 
 For ad-hoc use, ask the user what they want audited:
 - A specific story ID + commit SHA → per-story flow

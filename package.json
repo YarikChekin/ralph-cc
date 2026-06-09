@@ -1,6 +1,6 @@
 {
   "name": "ralph-cc",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Spec-driven development workflow for Claude Code — sprint planning, session management, audit teammate, and idea pipeline",
   "keywords": [
     "claude-code",
