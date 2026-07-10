@@ -27,7 +27,7 @@ test_progress: scripts/ralph/test-progress.txt
 ## Audit (optional — defaults: mode=sprint-close, reports_dir=scripts/ralph/audit-reports, team_name=ralph-<project folder>)
 mode: sprint-close          # off | sprint-close | per-story
 reports_dir: scripts/ralph/audit-reports
-team_name: ralph-my-project # MUST be unique per project — Claude Code teams are machine-global; two projects sharing a team name cross-wire their agents
+team_name: ralph-my-project # unique per project. Current Claude Code ignores it (teams are per-session); older versions key teams by name MACHINE-GLOBALLY, where a shared name cross-wires concurrent projects — keep it unique for back-compat. Spawned agents use a project-suffixed name too (auditor-<project folder>).
 
 ## Merge (optional — defaults: mode=local, branch_base=main)
 mode: local                  # local | pr

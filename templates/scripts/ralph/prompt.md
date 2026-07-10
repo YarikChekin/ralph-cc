@@ -32,7 +32,7 @@ Behavior is set by RALPH.md Audit.mode:
 
 - **`off`** — no audit. The lead flips `passes: true` itself when it judges the story complete. (Use this only for solo experimentation or non-critical projects.)
 - **`sprint-close`** (default) — no per-story audit. After all stories are complete, the auditor runs the sprint-close branch sweep before merge. The lead flips `passes: true` directly after a story commits successfully.
-- **`per-story`** — strict. After each `feat:` commit, the lead messages the auditor teammate (`SendMessage({ to: "auditor", ... })`), waits for the verdict, and ONLY flips `passes: true` in a separate `chore(ralph)` commit after the auditor returns `SIGN OFF`. Verdicts:
+- **`per-story`** — strict. After each `feat:` commit, the lead messages the auditor teammate (`SendMessage({ to: "<auditor>", ... })` — the project-suffixed auditor name, e.g. `auditor-my-project`), waits for the verdict, and ONLY flips `passes: true` in a separate `chore(ralph)` commit after the auditor returns `SIGN OFF`. Verdicts:
   - `SIGN OFF` → create a `chore(ralph): <STORY-ID> - mark passes after audit sign-off` commit that flips `passes: true`. Move to the next story.
   - `PASS-PENDING-HUMAN` → story stays `passes: false`. Surface the humanGated AC text to the user. May continue with the next story if it doesn't depend on this one.
   - `REQUEST CHANGES` / `FAIL` → fix, commit as `fix(ralph): <STORY-ID> - <summary>`, re-message the auditor. Cap re-audit at 3 iterations.

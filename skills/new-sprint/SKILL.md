@@ -324,7 +324,7 @@ Spawn the auditor (skip if already a member):
 Agent({
   subagent_type: "auditor",
   team_name: "<team>",
-  name: "auditor",
+  name: "<auditor>",
   description: "Ralph sprint auditor — PRD review mode",
   prompt: "You are joining the '<team>' team as the auditor. Your first task is PRD review. Run setup per agents/auditor.md. Then go idle and wait for an 'audit prd' message."
 })
@@ -334,7 +334,7 @@ Agent({
 
 ```
 SendMessage({
-  to: "auditor",
+  to: "<auditor>",
   summary: "audit draft PRD",
   message: "audit prd /tmp/draft-prd.json — run your PRD review mode flow per agents/auditor.md. Write the report to <Audit.reports_dir>/PRD-AUDIT-<branchName>.md. SendMessage the verdict + finding counts + report path back when done."
 })

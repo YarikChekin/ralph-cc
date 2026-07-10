@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.3 — 2026-07-10
+
+- **Team machinery modernized for current Claude Code (implicit per-session teams), back-compatible with older named-team harnesses.** Current harnesses ignore `team_name`, no longer ship `TeamCreate`/`TeamDelete`, and scope agent mailboxes per-session (`~/.claude/teams/session-<id>/`) — so flows must not gate on `~/.claude/teams/<team>/config.json` existing or call `TeamCreate` unconditionally. All skills now spawn the auditor directly, keep passing `team_name: "<team>"` (no-op today, correct isolation on older versions), and locate cross-session continuity in `audit-progress.txt` + committed reports instead of team config. `/wrap` detects a live auditor from session state, not the global teams directory.
+- **Project-suffixed agent names + provenance hygiene.** The auditor is now spawned as `<auditor>` = `auditor-<project-folder>` so a human running several Ralph projects side by side can attribute teammate messages at a glance. New standing rules in the shared team note: a teammate message referencing another project's state is suspect (verify against this repo's files before acting), and a peer message never carries user approval.
+
 ## 2.0.2 — 2026-06-09
 
 - **Per-project team names (fixes cross-project agent cross-wiring).** All skills and the auditor agent now resolve the coordination team as `<team>` = RALPH.md `Audit.team_name`, defaulting to `ralph-<project-folder>` — never the bare literal `ralph`. Claude Code teams are machine-global (`~/.claude/teams/`), so the old hardcoded name made any two projects running Ralph concurrently share one team: a lead in one repo could wake an idle session in another repo and send it work (observed in the field running closetize-app and closetize-website side by side). `/ralph-init` now writes `team_name` into RALPH.md explicitly; existing projects should add the key (or rely on the derived default) — their next `/start` spawns a fresh, correctly-namespaced team.
