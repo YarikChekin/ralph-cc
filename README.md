@@ -138,6 +138,16 @@ branch_base: main
 - `local` (default) — `/start` Case D merges directly to `branch_base`.
 - `pr` — `/start` Case D opens a PR via `gh pr create`; Case D2 handles the post-review states (awaiting / changes requested / approved → merge). The plugin does NOT ship a reviewer dispatch script — your project decides how reviewers run (manual, CI, Claude Code agent dispatch, etc.).
 
+### Recap
+
+```
+## Recap
+enabled: ask                 # off | ask | on
+evidence_dir: scripts/ralph/evidence
+```
+
+A one-page, image-first "what shipped" artifact built by an agent at sprint close — for the human who ran the sprint, because by close-out most people have forgotten what story 1 was. Uses per-story screenshots from `evidence_dir/<story-id>/` when they exist (falls back to a typographic card grid when they don't), captions of ~10 words, published via the Artifact tool. `ask` (default) offers it once at each sprint close; `on` builds it automatically.
+
 ### Github
 
 ```

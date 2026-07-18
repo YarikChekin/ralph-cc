@@ -33,6 +33,10 @@ team_name: ralph-my-project # unique per project. Current Claude Code ignores it
 mode: local                  # local | pr
 branch_base: main
 
+## Recap (optional — defaults: enabled=ask, evidence_dir=scripts/ralph/evidence)
+enabled: ask                 # off | ask | on — visual "what shipped" artifact at sprint close
+evidence_dir: scripts/ralph/evidence  # per-story screenshot dirs (<evidence_dir>/<story-id>/) used when present
+
 ## Github (optional — defaults: enabled=false)
 enabled: false               # if true, /start surfaces gh issues, /new-sprint accepts issue sources
 

@@ -1,6 +1,8 @@
 {
   "name": "ralph-cc",
-  "description": "Spec-driven development workflow — sprint planning, session management, audit teammate, and idea pipeline for Claude Code",
-  "version": "2.0.1",
-  "author": { "name": "YarikChekin" }
+  "description": "Spec-driven development workflow \u2014 sprint planning, session management, audit teammate, and idea pipeline for Claude Code",
+  "version": "2.1.0",
+  "author": {
+    "name": "YarikChekin"
+  }
 }

@@ -203,7 +203,8 @@ If no critical issues (or user chooses to proceed), branch to the merge flow bas
 4. If prd.json has "source": "backlog" with sourceItem — update the corresponding item's status in the backlog file to `**Status:** Complete ([date])`.
 5. If prd.json has "source": "github-issue" with sourceIssues — verify auto-close via `Fixes #N` keywords in commits. For any that didn't auto-close, run `gh issue close [NUMBER] --comment "Resolved in [branchName]."`.
 6. Versioning: ask the user if the project uses versioning. If yes, bump version files + CHANGELOG, create a git tag.
-7. Tell the user: "Sprint merged! Run /new-sprint to set up the next one."
+7. Visual sprint recap — see "Visual sprint recap" below (gated on Recap.enabled).
+8. Tell the user: "Sprint merged! Run /new-sprint to set up the next one." — include the recap artifact URL if one was built.
 ```
 
 #### Merge.mode = pr
@@ -221,6 +222,23 @@ Open a PR for external review. The plugin does NOT ship a reviewer dispatch scri
 
 Then **stop** — don't merge locally. The PR is the review gate.
 
+#### Visual sprint recap (both merge modes, post-merge)
+
+A one-page, image-first "what shipped" artifact for the human who ran the sprint — by close-out, most people have forgotten what story 1 was. Gated on `Recap.enabled` in RALPH.md (default `ask`):
+
+- `off` — skip.
+- `ask` — offer once per sprint close: "Want a visual recap of what shipped?" Respect the answer.
+- `on` — build it automatically.
+
+Spawn a `general-purpose` agent (background is fine — deliver the URL when it completes):
+
+1. Read `prd.json` (story titles + descriptions), the sprint's CHANGELOG section (if the project versions), and any screenshots under `<Recap.evidence_dir>/<story-id>/`.
+2. Build a self-contained HTML page that is **images over words**: a short hero header (sprint name, date, N stories, branch/PR), then one card per story or theme — a real screenshot where one exists, caption of ~10 words or fewer, at most one supporting line. Group related stories when that reads better. No AC tables, no prose sections — if the reader needs a paragraph, it failed.
+3. **No screenshots available?** Fall back to a typographic card grid (story title + one-line outcome per card) — still scannable, still not prose. Projects whose audit flow captures per-story screenshots into `<Recap.evidence_dir>/<story-id>/` get the full visual version automatically.
+4. Downscale images before embedding (`sips -Z 560` on macOS, ImageMagick `convert -resize` elsewhere) and embed as data URIs — artifact pages cannot load external or `file://` images. Keep the page under ~4MB.
+5. Load the `artifact-design` skill BEFORE writing the page, publish via the Artifact tool (stable favicon, e.g. "🚢"; one artifact per sprint, named after the branch), and report the URL.
+6. If the Artifact tool isn't available in the session, write the HTML to `<Audit.reports_dir>/recap-<branch-name>.html` instead and tell the user to open it locally.
+
 ### Case D2: Open PR exists, awaiting review or changes requested (Merge.mode = pr only)
 
 If a PR already exists for the current branch (check with `gh pr view [branchName] --json state,reviews,comments`):
@@ -233,7 +251,8 @@ If a PR already exists for the current branch (check with `gh pr view [branchNam
   2. git checkout <Merge.branch_base> && git pull origin <Merge.branch_base>
   3. If versioning: tag the merge commit (git tag vX.Y.Z && git push origin vX.Y.Z).
   4. Close source issues (verify auto-close, then manually close any that didn't).
-  5. Tell the user: "PR merged! Run /new-sprint to set up the next one."
+  5. Visual sprint recap — see "Visual sprint recap" under the merge modes above (gated on Recap.enabled).
+  6. Tell the user: "PR merged! Run /new-sprint to set up the next one." — include the recap artifact URL if one was built.
   ```
 
 ### Case E: On the base branch, no active sprint

@@ -486,7 +486,7 @@ This should be **one interaction** for most projects. Only ask follow-up questio
 
 ## Step 3b: Configure v2 Workflow Toggles
 
-ralph-cc v2 introduces three workflow toggles in `RALPH.md` — Audit, Merge, and GitHub. Walk the user through them so they understand what they're opting into. Use `AskUserQuestion` with the three questions below, in a single batched call so the user answers all three at once rather than three sequential interactions.
+ralph-cc v2 introduces four workflow toggles in `RALPH.md` — Audit, Merge, GitHub, and Recap. Walk the user through them so they understand what they're opting into. Use `AskUserQuestion` with the four questions below, in a single batched call so the user answers all four at once rather than four sequential interactions.
 
 **Auto-detection hints (use to set "Recommended" defaults):**
 - If `.git/config` shows a GitHub remote → recommend `Merge.mode = pr` and `Github.enabled = true`
@@ -519,6 +519,14 @@ Mark whichever matches your project-context heuristic as "(Recommended)".
 > - **true** — `/start` shows open `gh issue list` results alongside the sprint dashboard; `/new-sprint` accepts issue numbers as a source (`source: "github-issue"`, `sourceIssues: [N]`); sprint-close auto-closes via `Fixes #N` keywords. Requires `gh` CLI installed and authenticated.
 > - **false** — uses only local backlog/issues files (`docs/POST_MVP_IMPROVEMENTS.md`, `docs/testing/issues.md`).
 
+**Question 4 — Sprint recap:**
+
+> "Build a visual 'what shipped' recap at each sprint close?"
+>
+> - **ask** — offered once at every sprint close; you decide each time. (Recommended.)
+> - **on** — built automatically after every merge: an agent turns the sprint's stories + evidence screenshots into a one-page, image-first artifact (~10-word captions) so you can see at a glance what the sprint contained.
+> - **off** — never.
+
 After the user answers, briefly reflect back the chosen toggles:
 
 ```
@@ -526,6 +534,7 @@ Workflow toggles set:
   Audit.mode    = [choice]
   Merge.mode    = [choice]
   Github.enabled = [choice]
+  Recap.enabled = [choice]
 
 You can edit these in RALPH.md anytime, or re-run /ralph-init to reconfigure.
 ```
@@ -574,6 +583,10 @@ team_name: ralph-[kebab-cased project folder name — MUST be unique per project
 mode: [from Step 3b — local | pr]
 branch_base: main
 
+## Recap
+enabled: [from Step 3b — off | ask | on]
+evidence_dir: scripts/ralph/evidence
+
 ## Github
 enabled: [from Step 3b — true | false]
 
@@ -582,7 +595,7 @@ commit_format: feat: [{story_id}] - [{title}]
 branch_prefix: ralph/
 ```
 
-Leave optional fields blank (just the key with no value) if the user didn't provide them. Substitute the three workflow-toggle values from Step 3b directly — do not hardcode defaults if the user picked something else.
+Leave optional fields blank (just the key with no value) if the user didn't provide them. Substitute the four workflow-toggle values from Step 3b directly — do not hardcode defaults if the user picked something else.
 
 ---
 

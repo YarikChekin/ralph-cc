@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.1.0 — 2026-07-18
+
+- **New workflow toggle: `Recap` — visual "what shipped" artifact at sprint close.** By close-out most people have forgotten what story 1 was; this closes that gap. When enabled, `/start`'s post-merge flow (both `Merge.mode = local` and `pr`) spawns a `general-purpose` agent that turns the sprint's stories, CHANGELOG section, and per-story evidence screenshots (`Recap.evidence_dir/<story-id>/`, default `scripts/ralph/evidence`) into a one-page, image-first artifact — ~10-word captions, screenshots downscaled + embedded as data URIs, published via the Artifact tool (falls back to an HTML file in `Audit.reports_dir` when the Artifact tool is unavailable, and to a typographic card grid when no screenshots exist). `enabled: off | ask | on`, default `ask`. `/ralph-init` Step 3b now walks four toggles (Audit, Merge, GitHub, Recap) in one batched question set. Originated as a founder request on closetize-app the day its activation sprint shipped.
+- `plugin.json` version re-synced with this changelog (it had stayed at 2.0.1 through the 2.0.2/2.0.3 releases).
+
 ## 2.0.3 — 2026-07-10
 
 - **Team machinery modernized for current Claude Code (implicit per-session teams), back-compatible with older named-team harnesses.** Current harnesses ignore `team_name`, no longer ship `TeamCreate`/`TeamDelete`, and scope agent mailboxes per-session (`~/.claude/teams/session-<id>/`) — so flows must not gate on `~/.claude/teams/<team>/config.json` existing or call `TeamCreate` unconditionally. All skills now spawn the auditor directly, keep passing `team_name: "<team>"` (no-op today, correct isolation on older versions), and locate cross-session continuity in `audit-progress.txt` + committed reports instead of team config. `/wrap` detects a live auditor from session state, not the global teams directory.
