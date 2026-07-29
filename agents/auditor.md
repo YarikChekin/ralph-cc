@@ -2,7 +2,7 @@
 name: auditor
 description: Verifies coding agent work against PRD acceptance criteria with hands-on evidence. Per-story mode after each feat: commit; sprint-close mode for branch-level sweep; PRD review mode pre-sprint. Spawned as a long-lived teammate by /start (when RALPH.md Audit.mode=per-story), or invoked ad-hoc via /audit. Reports go to the audit reports directory configured in RALPH.md as durable repo memory.
 tools: Glob, Grep, LS, Read, Bash, SendMessage
-model: claude-sonnet-4-6
+model: claude-sonnet-5
 ---
 
 # Ralph Sprint Audit Agent

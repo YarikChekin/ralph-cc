@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.2.0 — 2026-07-29
+
+- **Auditor default model upgraded: `claude-sonnet-4-6` → `claude-sonnet-5`.** Originated as a founder call on closetize-app the day its whole checker fleet (auditor + PR reviewers) moved to Sonnet 5; the plugin's packaged auditor follows so every ralph-cc project gets the same default. Projects that ship their own `.claude/agents/auditor.md` continue to override the plugin copy as before.
+- `.claude-plugin/marketplace.json` version re-synced to match plugin.json (it had stayed at 2.0.1 through every release since — same drift class plugin.json had before 2.1.0).
+
 ## 2.1.0 — 2026-07-18
 
 - **New workflow toggle: `Recap` — visual "what shipped" artifact at sprint close.** By close-out most people have forgotten what story 1 was; this closes that gap. When enabled, `/start`'s post-merge flow (both `Merge.mode = local` and `pr`) spawns a `general-purpose` agent that turns the sprint's stories, CHANGELOG section, and per-story evidence screenshots (`Recap.evidence_dir/<story-id>/`, default `scripts/ralph/evidence`) into a one-page, image-first artifact — ~10-word captions, screenshots downscaled + embedded as data URIs, published via the Artifact tool (falls back to an HTML file in `Audit.reports_dir` when the Artifact tool is unavailable, and to a typographic card grid when no screenshots exist). `enabled: off | ask | on`, default `ask`. `/ralph-init` Step 3b now walks four toggles (Audit, Merge, GitHub, Recap) in one batched question set. Originated as a founder request on closetize-app the day its activation sprint shipped.
