@@ -136,7 +136,16 @@ branch_base: main
 ```
 
 - `local` (default) — `/start` Case D merges directly to `branch_base`.
-- `pr` — `/start` Case D opens a PR via `gh pr create`; Case D2 handles the post-review states (awaiting / changes requested / approved → merge). The plugin does NOT ship a reviewer dispatch script — your project decides how reviewers run (manual, CI, Claude Code agent dispatch, etc.).
+- `pr` — `/start` Case D opens a PR via `gh pr create`; Case D2 handles the post-review states (awaiting / changes requested / approved → merge). Pair with the Reviewers toggle below for a built-in review gate, or bring your own (manual, CI, your own agent dispatch).
+
+### Reviewers
+
+```
+## Reviewers
+enabled: false               # only used when Merge.mode=pr
+```
+
+The built-in PR review gate (opt-in at `/ralph-init` when you pick `Merge.mode = pr`). When enabled, init scaffolds two reviewer agents into your project's `.claude/agents/` — a **Code Reviewer** (HOW the code is written: security, performance, error handling, conventions) and a **QA Engineer** (WHAT it delivers: every acceptance criterion in prd.json, tracking-doc sync, test coverage) — plus a dispatch script at `scripts/ralph/pr-review.sh`. `/start`'s PR flow runs both as parallel Claude Code CLI processes; each posts its review as a PR comment ending in an APPROVE / REQUEST CHANGES verdict, and the merge waits until **both** approve on the current head. Re-review after fixes is one command (the agents diff their own prior comments), and a single failed agent can be re-run alone (`pr-review.sh <PR> code|qa`). The agent files live in your project, so you can tune the checklists — out of the box they read `RALPH.md`/`CLAUDE.md` at review time for project specifics.
 
 ### Recap
 

@@ -486,7 +486,7 @@ This should be **one interaction** for most projects. Only ask follow-up questio
 
 ## Step 3b: Configure v2 Workflow Toggles
 
-ralph-cc v2 introduces four workflow toggles in `RALPH.md` — Audit, Merge, GitHub, and Recap. Walk the user through them so they understand what they're opting into. Use `AskUserQuestion` with the four questions below, in a single batched call so the user answers all four at once rather than four sequential interactions.
+ralph-cc v2 introduces five workflow toggles in `RALPH.md` — Audit, Merge, GitHub, Recap, and (when merging via PR) Reviewers. Walk the user through them so they understand what they're opting into. Use `AskUserQuestion` with the four questions below in a single batched call (the tool caps at four questions per call); the fifth — Reviewers — is a conditional follow-up asked only when the user picks `Merge.mode = pr`, because it has no effect in any other mode.
 
 **Auto-detection hints (use to set "Recommended" defaults):**
 - If `.git/config` shows a GitHub remote → recommend `Merge.mode = pr` and `Github.enabled = true`
@@ -527,6 +527,15 @@ Mark whichever matches your project-context heuristic as "(Recommended)".
 > - **on** — built automatically after every merge: an agent turns the sprint's stories + evidence screenshots into a one-page, image-first artifact (~10-word captions) so you can see at a glance what the sprint contained.
 > - **off** — never.
 
+**Question 5 — PR Reviewers (conditional — ask ONLY if the user chose `Merge.mode = pr`, in a separate single-question `AskUserQuestion` call after the batch):**
+
+> "Scaffold the PR reviewer pair (Code Reviewer + QA Engineer)?"
+>
+> - **true** — copies two reviewer agents into `.claude/agents/` and a dispatch script to `scripts/ralph/pr-review.sh`. At sprint close, `/start`'s PR flow runs both as parallel Claude Code CLI processes: the Code Reviewer checks HOW the code is written (security, performance, error handling, conventions), the QA Engineer checks WHAT it delivers (every acceptance criterion in prd.json). Each posts its review as a PR comment ending in an APPROVE / REQUEST CHANGES verdict, and the merge waits for both APPROVEs. (Recommended with `Merge.mode = pr`.)
+> - **false** — bring your own review (manual, CI, or your own agents). `/start` opens the PR and stops until it's approved.
+
+The reviewer files land in the PROJECT (not served from the plugin), so the user can tune the checklists per project — but the templates read `RALPH.md`/`CLAUDE.md` at review time for project specifics, so they also work unedited.
+
 After the user answers, briefly reflect back the chosen toggles:
 
 ```
@@ -535,11 +544,21 @@ Workflow toggles set:
   Merge.mode    = [choice]
   Github.enabled = [choice]
   Recap.enabled = [choice]
+  Reviewers.enabled = [choice — line present only if the question was asked]
 
 You can edit these in RALPH.md anytime, or re-run /ralph-init to reconfigure.
 ```
 
 If the user picks `Merge.mode = pr` or `Github.enabled = true`, **silently verify** `gh` is installed (`gh --version`) and authenticated (`gh auth status`). If either check fails, warn the user once but proceed — the skill is configuration, not enforcement; the user can install/authenticate `gh` later.
+
+**If Reviewers.enabled = true, scaffold the reviewer files now:**
+
+1. Create `.claude/agents/` if it doesn't exist.
+2. Copy from the installed plugin's templates, verbatim:
+   - `templates/agents/code-reviewer.md` → `.claude/agents/code-reviewer.md`
+   - `templates/agents/qa-engineer.md` → `.claude/agents/qa-engineer.md`
+   - `templates/scripts/ralph/pr-review.sh` → `scripts/ralph/pr-review.sh`, then `chmod +x` it.
+3. **Never overwrite an existing file silently.** If any target already exists (a project with its own reviewer definitions or dispatch script), show a short diff summary and ask before replacing — projects customize these on purpose.
 
 ---
 
@@ -583,6 +602,9 @@ team_name: ralph-[kebab-cased project folder name — MUST be unique per project
 mode: [from Step 3b — local | pr]
 branch_base: main
 
+## Reviewers
+enabled: [from Step 3b — true | false; write false when the question wasn't asked (Merge.mode=local)]
+
 ## Recap
 enabled: [from Step 3b — off | ask | on]
 evidence_dir: scripts/ralph/evidence
@@ -595,7 +617,7 @@ commit_format: feat: [{story_id}] - [{title}]
 branch_prefix: ralph/
 ```
 
-Leave optional fields blank (just the key with no value) if the user didn't provide them. Substitute the four workflow-toggle values from Step 3b directly — do not hardcode defaults if the user picked something else.
+Leave optional fields blank (just the key with no value) if the user didn't provide them. Substitute the workflow-toggle values from Step 3b directly — do not hardcode defaults if the user picked something else.
 
 ---
 
@@ -618,6 +640,7 @@ Workflow toggles in RALPH.md (from Step 3b — edit anytime to change):
   Audit.mode    = [user's choice]
   Merge.mode    = [user's choice]
   Github.enabled = [user's choice]
+  Reviewers.enabled = [user's choice — include the .claude/agents/ + pr-review.sh lines in "Created" when true]
 
 Next steps:
   1. Run /prd-plan to define your product requirements

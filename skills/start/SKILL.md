@@ -40,6 +40,7 @@ Stop here.
 - `Audit.reports_dir` — default `scripts/ralph/audit-reports`
 - `Merge.mode` — `local | pr` (default: `local`)
 - `Merge.branch_base` — default `main`
+- `Reviewers.enabled` — `true | false` (default: `false`; only used when `Merge.mode = pr` — dispatches the scaffolded Code Reviewer + QA Engineer pair and gates merge on both APPROVE verdicts)
 - `Github.enabled` — `true | false` (default: `false`)
 
 Then gather state:
@@ -209,7 +210,7 @@ If no critical issues (or user chooses to proceed), branch to the merge flow bas
 
 #### Merge.mode = pr
 
-Open a PR for external review. The plugin does NOT ship a reviewer dispatch script — that's project-specific (you may use manual review, CI, your own Claude Code agent dispatch, etc.).
+Open a PR for external review.
 
 ```
 1. git push -u origin [branchName]
@@ -217,8 +218,26 @@ Open a PR for external review. The plugin does NOT ship a reviewer dispatch scri
      --title "feat: [description from prd.json]" \
      --body "<sprint summary with story list and source issues>"
 3. Show the PR URL.
-4. Tell the user: "PR opened. Dispatch your reviewers now (whatever your project uses). When the PR is approved, run /start again — Case D2 will pick it up and merge."
 ```
+
+**Then, if `Reviewers.enabled = true`** (the scaffolded reviewer pair):
+
+```
+4. Run: bash scripts/ralph/pr-review.sh [PR_NUMBER]
+   — launches Code Reviewer + QA Engineer as parallel Claude Code CLI
+   processes; each posts its review as a PR comment ending in an
+   APPROVE / REQUEST CHANGES verdict. The script blocks until both exit.
+5. When the script finishes, VERIFY both reviews actually posted
+   (gh pr view [PR_NUMBER] --comments — one "## Code Review" and one
+   "## QA Review"). A failed agent may have posted anyway (double-post,
+   harmless) or not posted at all — re-run just the missing one:
+   bash scripts/ralph/pr-review.sh [PR_NUMBER] code|qa
+6. Tell the user: "PR opened and reviewers dispatched. If both APPROVE,
+   run /start again — Case D2 merges. If either requests changes,
+   /start Case D2 picks up the feedback."
+```
+
+If `Reviewers.enabled = false`: tell the user "PR opened. Dispatch your reviewers now (whatever your project uses — manual review, CI, your own agents). When the PR is approved, run /start again — Case D2 will pick it up and merge."
 
 Then **stop** — don't merge locally. The PR is the review gate.
 
@@ -243,9 +262,9 @@ Spawn a `general-purpose` agent (background is fine — deliver the URL when it 
 
 If a PR already exists for the current branch (check with `gh pr view [branchName] --json state,reviews,comments`):
 
-- **If reviews are pending** — remind the user that reviewers haven't posted yet. Ask if they want to dispatch reviewers (project-specific — surface as "run your reviewer command").
-- **If changes were requested** — pull review comments with `gh pr view --comments`, summarize the requested changes, ask if the user wants to fix them. If yes, proceed to **Start Working** with the review feedback as context. After fixes, commit, push.
-- **If approved** — proceed to merge:
+- **If reviews are pending** — with `Reviewers.enabled = true`: check whether `pr-review.sh` ever ran (are there "## Code Review" / "## QA Review" comments?); if not, dispatch now (`bash scripts/ralph/pr-review.sh [PR_NUMBER]`), and if only ONE review is missing, re-run just that agent (`... [PR_NUMBER] code|qa`). With `Reviewers.enabled = false`: remind the user that reviewers haven't posted yet and surface "run your reviewer command".
+- **If changes were requested** — pull review comments with `gh pr view --comments`, summarize the requested changes, ask if the user wants to fix them. If yes, proceed to **Start Working** with the review feedback as context. After fixes, commit, push — then with `Reviewers.enabled = true`, re-dispatch (`bash scripts/ralph/pr-review.sh [PR_NUMBER]`): the script's prompt makes each agent read its prior comments and mark them "Previously flagged X — RESOLVED / STILL PRESENT", plus flag any NEW issues the fixes introduced.
+- **If approved** — with `Reviewers.enabled = true`, "approved" means BOTH a Code Review comment and a QA Review comment ending in `Verdict: APPROVE` on the current head (a verdict predating pushed fixes doesn't count — re-dispatch instead). Then proceed to merge:
   ```
   1. gh pr merge [PR_NUMBER] --merge
   2. git checkout <Merge.branch_base> && git pull origin <Merge.branch_base>
