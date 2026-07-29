@@ -519,13 +519,16 @@ Mark whichever matches your project-context heuristic as "(Recommended)".
 > - **true** — `/start` shows open `gh issue list` results alongside the sprint dashboard; `/new-sprint` accepts issue numbers as a source (`source: "github-issue"`, `sourceIssues: [N]`); sprint-close auto-closes via `Fixes #N` keywords. Requires `gh` CLI installed and authenticated.
 > - **false** — uses only local backlog/issues files (`docs/POST_MVP_IMPROVEMENTS.md`, `docs/testing/issues.md`).
 
-**Question 4 — Sprint recap:**
+**Question 4 — Visual artifact pages:**
 
-> "Build a visual 'what shipped' recap at each sprint close?"
+> "Should ralph build founder-facing visual artifact pages at sprint milestones?"
 >
-> - **ask** — offered once at every sprint close; you decide each time. (Recommended.)
-> - **on** — built automatically after every merge: an agent turns the sprint's stories + evidence screenshots into a one-page, image-first artifact (~10-word captions) so you can see at a glance what the sprint contained.
-> - **off** — never.
+> - **plan + recap** — a sprint-PLAN page when `/new-sprint` finishes (the sprint's scope at a glance — stories, priorities, what each fixes — before any work starts) AND the image-first "what shipped" RECAP after the sprint merges. (Recommended.)
+> - **recap only** — only the sprint-close recap.
+> - **plan only** — only the sprint-plan page.
+> - **off** — neither.
+
+Both artifacts are written to RALPH.md in `ask` mode (offered at the moment so the user decides each time); tell the user they can edit either to `on` (automatic) or `off` in RALPH.md. Maps to config as: `Recap.enabled` (ask/off) + `SprintPlan.artifact` (ask/off).
 
 **Question 5 — PR Reviewers (conditional — ask ONLY if the user chose `Merge.mode = pr`, in a separate single-question `AskUserQuestion` call after the batch):**
 
@@ -536,6 +539,18 @@ Mark whichever matches your project-context heuristic as "(Recommended)".
 
 The reviewer files land in the PROJECT (not served from the plugin), so the user can tune the checklists per project — but the templates read `RALPH.md`/`CLAUDE.md` at review time for project specifics, so they also work unedited.
 
+**Question 5b — Reviewer model (ask ONLY if Reviewers = true, in the same or a follow-up `AskUserQuestion` call):**
+
+> "Which model should the reviewer agents run on?"
+
+Build the options from what YOU (the assistant running this skill) know to be the CURRENT Claude lineup at init time — do NOT copy model names from this document, which ages:
+
+> - **Newest Sonnet-tier model (Recommended)** — verification-tier work at the best cost/quality point; name the actual current model ID in the option label.
+> - **Newest Opus-tier model** — maximum scrutiny for production-critical projects, slower and pricier; name the actual current ID.
+> - **Inherit session model** — no pin; reviewers run on whatever model the dispatching CLI session uses.
+
+After the user picks, the scaffold step below REWRITES the `model:` frontmatter line in both copied agent files to the chosen full model ID (or `inherit`). The shipped templates carry the newest-Sonnet-at-release as a fallback default, but the init-time rewrite is the source of truth — this is deliberate, so the pinned model tracks the lineup current at setup time instead of whatever existed when the plugin shipped.
+
 After the user answers, briefly reflect back the chosen toggles:
 
 ```
@@ -544,7 +559,9 @@ Workflow toggles set:
   Merge.mode    = [choice]
   Github.enabled = [choice]
   Recap.enabled = [choice]
+  SprintPlan.artifact = [choice]
   Reviewers.enabled = [choice — line present only if the question was asked]
+  Reviewer model = [choice — only if Reviewers = true]
 
 You can edit these in RALPH.md anytime, or re-run /ralph-init to reconfigure.
 ```
@@ -554,10 +571,11 @@ If the user picks `Merge.mode = pr` or `Github.enabled = true`, **silently verif
 **If Reviewers.enabled = true, scaffold the reviewer files now:**
 
 1. Create `.claude/agents/` if it doesn't exist.
-2. Copy from the installed plugin's templates, verbatim:
+2. Copy from the installed plugin's templates:
    - `templates/agents/code-reviewer.md` → `.claude/agents/code-reviewer.md`
    - `templates/agents/qa-engineer.md` → `.claude/agents/qa-engineer.md`
    - `templates/scripts/ralph/pr-review.sh` → `scripts/ralph/pr-review.sh`, then `chmod +x` it.
+   Then rewrite the `model:` frontmatter line in BOTH copied agent files to the user's Question 5b choice (a full model ID, or `inherit`).
 3. **Never overwrite an existing file silently.** If any target already exists (a project with its own reviewer definitions or dispatch script), show a short diff summary and ask before replacing — projects customize these on purpose.
 
 ---
@@ -597,6 +615,7 @@ test_progress: scripts/ralph/test-progress.txt
 mode: [from Step 3b — sprint-close | per-story | off]
 reports_dir: scripts/ralph/audit-reports
 team_name: ralph-[kebab-cased project folder name — MUST be unique per project; teams are machine-global]
+model: sonnet
 
 ## Merge
 mode: [from Step 3b — local | pr]
@@ -606,8 +625,11 @@ branch_base: main
 enabled: [from Step 3b — true | false; write false when the question wasn't asked (Merge.mode=local)]
 
 ## Recap
-enabled: [from Step 3b — off | ask | on]
+enabled: [from Step 3b Question 4 — ask if recap chosen, off otherwise]
 evidence_dir: scripts/ralph/evidence
+
+## SprintPlan
+artifact: [from Step 3b Question 4 — ask if plan chosen, off otherwise]
 
 ## Github
 enabled: [from Step 3b — true | false]

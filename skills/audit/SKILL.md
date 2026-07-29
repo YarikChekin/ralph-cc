@@ -28,6 +28,7 @@ Agent({
   team_name: "<team>",
   name: "<auditor>",
   description: "Ralph sprint auditor",
+  model: "<Audit.model>",  // tier name from RALPH.md Audit.model (default sonnet) — overrides the agent-file pin
   prompt: "Run setup per agents/auditor.md, then audit <STORY-ID> at commit <SHA>. Report verdict via SendMessage to team-lead."
 })
 ```

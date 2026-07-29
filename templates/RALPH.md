@@ -24,9 +24,10 @@ ideas: docs/ideas/_index.md
 test_plan: scripts/ralph/test-plan.json
 test_progress: scripts/ralph/test-progress.txt
 
-## Audit (optional — defaults: mode=sprint-close, reports_dir=scripts/ralph/audit-reports, team_name=ralph-<project folder>)
+## Audit (optional — defaults: mode=sprint-close, reports_dir=scripts/ralph/audit-reports, team_name=ralph-<project folder>, model=sonnet)
 mode: sprint-close          # off | sprint-close | per-story
 reports_dir: scripts/ralph/audit-reports
+model: sonnet               # tier name (sonnet | opus | haiku) passed as the Agent-tool model override at spawn — tier names track the newest model in that tier, so this never goes stale; a full model ID also works if you want to pin an exact version
 team_name: ralph-my-project # unique per project. Current Claude Code ignores it (teams are per-session); older versions key teams by name MACHINE-GLOBALLY, where a shared name cross-wires concurrent projects — keep it unique for back-compat. Spawned agents use a project-suffixed name too (auditor-<project folder>).
 
 ## Merge (optional — defaults: mode=local, branch_base=main)
@@ -39,6 +40,9 @@ enabled: false               # if true, /start's PR flow dispatches Code Reviewe
 ## Recap (optional — defaults: enabled=ask, evidence_dir=scripts/ralph/evidence)
 enabled: ask                 # off | ask | on — visual "what shipped" artifact at sprint close
 evidence_dir: scripts/ralph/evidence  # per-story screenshot dirs (<evidence_dir>/<story-id>/) used when present
+
+## SprintPlan (optional — defaults: artifact=off)
+artifact: off                # off | ask | on — visual sprint-plan page when /new-sprint finishes (scope at a glance before work starts)
 
 ## Github (optional — defaults: enabled=false)
 enabled: false               # if true, /start surfaces gh issues, /new-sprint accepts issue sources

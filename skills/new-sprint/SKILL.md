@@ -326,6 +326,7 @@ Agent({
   team_name: "<team>",
   name: "<auditor>",
   description: "Ralph sprint auditor — PRD review mode",
+  model: "<Audit.model>",  // tier name from RALPH.md (default sonnet) — overrides the agent-file pin
   prompt: "You are joining the '<team>' team as the auditor. Your first task is PRD review. Run setup per agents/auditor.md. Then go idle and wait for an 'audit prd' message."
 })
 ```
@@ -406,7 +407,22 @@ humanGated ACs: [count, with story IDs that have them]
 Run /start to begin working on the first story.
 ```
 
----
+### Sprint-plan artifact (gated on SprintPlan.artifact)
+
+After the summary, check RALPH.md `SprintPlan.artifact` (default `off`):
+
+- `off` — skip.
+- `ask` — offer once: "Want a visual sprint-plan page for this sprint?" Respect the answer.
+- `on` — build it automatically.
+
+When building, spawn a `general-purpose` agent (background is fine — deliver the URL when it completes):
+
+1. Read the freshly written `prd.json`.
+2. Build a self-contained HTML page: a short hero header (sprint name, branch, N stories, source issues), then one card per story in priority order — story ID + title, one line on what it fixes/adds (from the description, not pasted verbatim), a small badge for humanGated ACs and test flows, and dependency arrows/notes where a story depends on an earlier one. Typographic card grid (there are no screenshots at plan time) — scannable in under a minute, no AC tables, no prose sections.
+3. Load the `artifact-design` skill BEFORE writing the page, publish via the Artifact tool (stable favicon, e.g. "🗺️"; one artifact per sprint plan, named after the branch, e.g. `plan-<branch-name>`), and report the URL.
+4. If the Artifact tool isn't available, write the HTML to `<Audit.reports_dir>/plan-<branch-name>.html` instead and tell the user to open it locally.
+
+The point: the human approves scope by reading the PLAN page in one glance, and at close-out the Recap page shows what actually shipped — the pair brackets the sprint.
 
 ## Right-Sized Stories — Reference
 

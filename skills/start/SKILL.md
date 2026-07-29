@@ -38,6 +38,7 @@ Stop here.
 
 - `Audit.mode` — `off | sprint-close | per-story` (default: `sprint-close`)
 - `Audit.reports_dir` — default `scripts/ralph/audit-reports`
+- `Audit.model` — default `sonnet`; a model-tier name (or full model ID) passed as the Agent-tool `model` override whenever the auditor is spawned
 - `Merge.mode` — `local | pr` (default: `local`)
 - `Merge.branch_base` — default `main`
 - `Reviewers.enabled` — `true | false` (default: `false`; only used when `Merge.mode = pr` — dispatches the scaffolded Code Reviewer + QA Engineer pair and gates merge on both APPROVE verdicts)
@@ -185,6 +186,7 @@ Stories completed: [total]
 - If `Audit.mode = sprint-close` or `per-story` — run the sprint-close branch sweep:
   ```
   Agent({ subagent_type: "auditor", team_name: "<team>", name: "<auditor>", description: "Ralph sprint auditor",
+          model: "<Audit.model>",  // tier name from RALPH.md (default sonnet) — overrides the agent-file pin
           prompt: "Run setup per agents/auditor.md, then audit branch sprint-close. Write to <Audit.reports_dir>/BRANCH-AUDIT-<branch-name>.md. SendMessage the verdict back." })
   ```
   Wait for the verdict, then show it to the user.
@@ -387,6 +389,7 @@ Agent({
   team_name: "<team>",
   name: "<auditor>",
   description: "Ralph sprint auditor",
+  model: "<Audit.model>",  // tier name from RALPH.md (default sonnet) — overrides the agent-file pin
   prompt: "You are joining the '<team>' team as the auditor. Run setup per agents/auditor.md (read RALPH.md, PRD, PATTERNS.md, audit-progress.txt last entry, progress.txt last entry, git state). Then go idle and wait for an audit task message from team-lead."
 })
 ```

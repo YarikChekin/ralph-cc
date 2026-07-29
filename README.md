@@ -121,6 +121,7 @@ Three optional sections control how aggressive the workflow is. All have safe de
 ## Audit
 mode: sprint-close          # off | sprint-close | per-story
 reports_dir: scripts/ralph/audit-reports
+model: sonnet               # tier name passed at spawn — tracks the newest model in that tier
 ```
 
 - `off` — no auditor involvement. The lead flips `passes: true` itself.
@@ -145,7 +146,7 @@ branch_base: main
 enabled: false               # only used when Merge.mode=pr
 ```
 
-The built-in PR review gate (opt-in at `/ralph-init` when you pick `Merge.mode = pr`). When enabled, init scaffolds two reviewer agents into your project's `.claude/agents/` — a **Code Reviewer** (HOW the code is written: security, performance, error handling, conventions) and a **QA Engineer** (WHAT it delivers: every acceptance criterion in prd.json, tracking-doc sync, test coverage) — plus a dispatch script at `scripts/ralph/pr-review.sh`. `/start`'s PR flow runs both as parallel Claude Code CLI processes; each posts its review as a PR comment ending in an APPROVE / REQUEST CHANGES verdict, and the merge waits until **both** approve on the current head. Re-review after fixes is one command (the agents diff their own prior comments), and a single failed agent can be re-run alone (`pr-review.sh <PR> code|qa`). The agent files live in your project, so you can tune the checklists — out of the box they read `RALPH.md`/`CLAUDE.md` at review time for project specifics.
+The built-in PR review gate (opt-in at `/ralph-init` when you pick `Merge.mode = pr`). When enabled, init scaffolds two reviewer agents into your project's `.claude/agents/` — a **Code Reviewer** (HOW the code is written: security, performance, error handling, conventions) and a **QA Engineer** (WHAT it delivers: every acceptance criterion in prd.json, tracking-doc sync, test coverage) — plus a dispatch script at `scripts/ralph/pr-review.sh`. Init also asks which model to pin the reviewers to, offering the Claude lineup current at setup time (newest Sonnet tier recommended; newest Opus tier for maximum scrutiny; or inherit the session model) — the model is resolved when YOU set up, not frozen at the plugin's release date. `/start`'s PR flow runs both as parallel Claude Code CLI processes; each posts its review as a PR comment ending in an APPROVE / REQUEST CHANGES verdict, and the merge waits until **both** approve on the current head. Re-review after fixes is one command (the agents diff their own prior comments), and a single failed agent can be re-run alone (`pr-review.sh <PR> code|qa`). The agent files live in your project, so you can tune the checklists — out of the box they read `RALPH.md`/`CLAUDE.md` at review time for project specifics.
 
 ### Recap
 
@@ -156,6 +157,15 @@ evidence_dir: scripts/ralph/evidence
 ```
 
 A one-page, image-first "what shipped" artifact built by an agent at sprint close — for the human who ran the sprint, because by close-out most people have forgotten what story 1 was. Uses per-story screenshots from `evidence_dir/<story-id>/` when they exist (falls back to a typographic card grid when they don't), captions of ~10 words, published via the Artifact tool. `ask` (default) offers it once at each sprint close; `on` builds it automatically.
+
+### SprintPlan
+
+```
+## SprintPlan
+artifact: off                # off | ask | on
+```
+
+The recap's front-half twin: a visual sprint-PLAN page built when `/new-sprint` finishes — one card per story in priority order (what it fixes, humanGated badges, dependencies), scannable in under a minute, so scope gets approved from a page rather than raw prd.json. Together the pair brackets a sprint: the plan page shows what you signed up for, the recap page shows what actually shipped. Configured with the Recap in one `/ralph-init` question ("Visual artifact pages": plan + recap / recap only / plan only / off).
 
 ### Github
 
