@@ -1,6 +1,6 @@
 ---
 name: audit
-description: Spawn the Ralph sprint audit agent to verify coding agent work against PRD acceptance criteria. Use this skill when the user invokes /audit for an ad-hoc audit outside the Ralph loop, when the user says "audit the sprint", "review the coding agent's work", or any mention of verifying stories against acceptance criteria. (Inside the Ralph loop with Audit.mode=per-story, /start spawns the auditor automatically after each feat: commit — see skills/start/SKILL.md.)
+description: "Spawn the Ralph sprint audit agent to verify coding agent work against PRD acceptance criteria. Use this skill when the user invokes /audit for an ad-hoc audit outside the Ralph loop, when the user says \"audit the sprint\", \"review the coding agent's work\", or any mention of verifying stories against acceptance criteria. (Inside the Ralph loop with Audit.mode=per-story, /start spawns the auditor automatically after each feat: commit — see skills/start/SKILL.md.)"
 ---
 
 # /audit — Spawn the Auditor Agent
