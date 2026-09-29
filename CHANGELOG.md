@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.4.1 — 2026-09-29
+
+- **`/audit` and the auditor agent now have valid YAML frontmatter.** Both descriptions contained an unquoted `feat: commit`, and a colon followed by a space inside a plain YAML scalar is a parse error under strict YAML. Claude Code's lenient loader was still reading the fields correctly, but a strict parser drops the whole frontmatter block — the auditor would lose its `model` and `tools` pins and `/audit` would fall back to a body-derived description. Both descriptions are now double-quoted; the text is unchanged. Every other skill, agent, and template in the repo already parsed cleanly.
+- `package.json` version re-synced to match plugin.json (it had stayed at 2.0.3 since that release — same drift class as the 2.1.0 and 2.2.0 re-syncs).
+
 ## 2.4.0 — 2026-07-29
 
 - **New toggle: `SprintPlan.artifact` — a visual sprint-plan page when `/new-sprint` finishes.** The Recap's front-half twin: one card per story in priority order (what it fixes, humanGated badges, dependencies), typographic, scannable in under a minute — scope gets approved from a page instead of raw prd.json. `/ralph-init` Question 4 is now "Visual artifact pages" and configures both moments at once (plan + recap / recap only / plan only / off); both write as `ask` mode, editable to `on`/`off` in RALPH.md. Falls back to an HTML file in `Audit.reports_dir` when the Artifact tool is unavailable, same as the Recap.
